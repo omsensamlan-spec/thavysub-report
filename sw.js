@@ -1,4 +1,9 @@
-// Service worker ແບບງ່າຍ: ບໍ່ເກັບ cache (ລະບົບຕ້ອງໃຊ້ອິນເຕີເນັດຢູ່ແລ້ວ) ໃຊ້ເພື່ອໃຫ້ຕິດຕັ້ງເປັນແອັບໄດ້
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
-self.addEventListener('fetch', () => {});
+const CACHE='tvs-app-v2';
+const SHELL=['./','index.html','manifest.webmanifest','icon-192.png'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{
+  const u=new URL(e.request.url);
+  if(e.request.method!=='GET'||u.origin!==location.origin)return;   // ບໍ່ແຕະຕ້ອງການເອີ້ນ API
+  e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request)));
+});
