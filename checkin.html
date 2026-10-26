@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="lo"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Check-in / Check-out</title>
+<meta name="theme-color" content="#0b6b4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Noto Sans Lao',system-ui,sans-serif;background:#f1f6f3;color:#1b2a24;min-height:100vh}
+header{background:#fff;padding:max(10px,env(safe-area-inset-top)) 12px 10px;border-bottom:3px solid #0b6b4a;display:flex;align-items:center;gap:10px}
+header img{height:34px}header b{color:#0b6b4a;font-size:16px;flex:1}
+.back{color:#0b6b4a;text-decoration:none;font-weight:700;font-size:14px}
+main{max-width:480px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 10px #0b6b4a1a}
+label{display:block;font-size:13px;color:#556;margin:10px 0 5px;font-weight:600}
+input,select{width:100%;padding:13px;border:1.5px solid #cfdcd5;border-radius:12px;font:inherit;font-size:16px;background:#fff}
+.gps{display:flex;align-items:center;gap:8px;font-size:13px;padding:10px 12px;border-radius:12px;background:#eef6f1;margin-top:12px}
+.gps.bad{background:#fdeceb;color:#b3261e}.gps.ok{background:#e4f5ec;color:#0b6b4a}
+.dot{width:10px;height:10px;border-radius:50%;background:#e0a100;flex:none}.ok .dot{background:#1a9a5b}.bad .dot{background:#d33}
+.selfie{height:170px;border:2px dashed #9bb8aa;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#5b7a6c;margin-top:12px;overflow:hidden;background:#f7fbf9;position:relative}
+.selfie img{width:100%;height:100%;object-fit:cover}.selfie .ic{font-size:40px}
+.row{display:flex;gap:12px;margin-top:14px}
+button{font:inherit;border:0;border-radius:14px;padding:16px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;flex:1}
+.in{background:#0b6b4a}.out{background:#d9822b}.alt{background:#fff;color:#0b6b4a;border:2px solid #0b6b4a;font-size:14px;padding:12px}
+button:disabled{opacity:.45}
+.res{border-radius:18px;padding:22px 16px;text-align:center;margin-bottom:14px}
+.res.ok{background:#e4f5ec}.res.err{background:#fdeceb}
+.res .big{font-size:52px}.res h2{margin:6px 0;font-size:20px}.res p{margin:4px 0;color:#445}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;text-align:left;background:#fff;border-radius:12px;padding:12px;margin-top:12px;font-size:14px}.kv b{color:#667;font-weight:600}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}.t-ok{background:#d7f0e2;color:#0b6b4a}.t-late{background:#fde8c9;color:#a35a00}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#eef6f1;border-radius:20px;padding:6px 12px;margin:3px;font-size:14px}
+.chip button{all:unset;color:#b3261e;font-weight:700;cursor:pointer}
+.tabs{display:flex;gap:6px;margin-bottom:12px}.tabs button{background:#e4ece8;color:#456;font-size:14px;padding:10px}.tabs .on{background:#0b6b4a;color:#fff}
+h3{margin:2px 0 8px;font-size:16px;color:#0b6b4a}.hint{font-size:12px;color:#778}
+.li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #edf1ef;font-size:14px}
+.mini{all:unset;color:#b3261e;font-weight:700;font-size:13px;cursor:pointer}
+.bar{height:10px;border-radius:6px;background:#e4ece8;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:#0b6b4a}
+</style></head><body>
+<header><a class="back" href="./">‹</a><img src="logo.png" alt=""><b>Check-in / Check-out</b></header>
+<main id="app"></main>
+<script>
+const Q=new URLSearchParams(location.search),DEMO=Q.has('demo');
+const $=document.getElementById('app'),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S={view:Q.get('s')||'main',email:'',loc:'',locs:[],gps:null,photo:'',busy:false,res:null,adminCode:'',tab:'emp',admin:null,leave:null,dates:['']};
+try{S.email=localStorage.getItem('ci_email')||''}catch(e){}
+function post(b){
+  if(DEMO)return Promise.resolve(demo(b));
+  if(typeof API_URL==='undefined'||!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(API_URL))return Promise.reject(new Error('API_URL ໃນ config.js ຍັງບໍ່ຖືກຕ້ອງ'));
+  return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(b)}).then(r=>r.json()).catch(()=>{throw new Error('ເຊື່ອມຕໍ່ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ ແລະ API_URL')});
+}
+function loadLocs(){
+  if(DEMO){S.locs=['ຫ້ອງການໃຫຍ່','ໂຄງການ Solar ແຂວງຄຳມ່ວນ','ໂຄງການ Solar ສະຫວັນນະເຂດ'];S.loc=S.locs[0];return render()}
+  fetch(API_URL).then(r=>r.json()).then(j=>{S.locs=j.locations||[];S.loc=S.locs[0]||'';render()}).catch(()=>{S.err='ໂຫຼດຈຸດເຮັດວຽກບໍ່ໄດ້';render()});
+}
+function getGps(){
+  if(DEMO){S.gps={acc:Q.get('s')==='weak'?120:18};return render()}
+  if(!navigator.geolocation){S.gps={err:'ເຄື່ອງບໍ່ຮອງຮັບ GPS'};return render()}
+  navigator.geolocation.getCurrentPosition(p=>{S.gps={lat:p.coords.latitude,lng:p.coords.longitude,acc:p.coords.accuracy};render()},e=>{S.gps={err:'ເປີດ GPS / ອະນຸຍາດຕຳແໜ່ງກ່ອນ'};render()},{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+}
+function pick(f){
+  if(!f)return;const img=new Image(),u=URL.createObjectURL(f);
+  img.onload=()=>{const m=640,k=Math.min(1,m/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);S.photo=c.toDataURL('image/jpeg',.7);render()};img.src=u;
+}
+function act(a){
+  S.email=document.getElementById('em').value.trim().toLowerCase();try{localStorage.setItem('ci_email',S.email)}catch(e){}
+  S.busy=true;render();
+  post({action:a,email:S.email,location:S.loc,lat:S.gps&&S.gps.lat,lng:S.gps&&S.gps.lng,accuracy:S.gps&&S.gps.acc,photo:S.photo})
+   .then(r=>{S.res=r;S.view='result';S.photo=''}).catch(e=>{S.res={ok:false,msg:e.message};S.view='result'}).finally(()=>{S.busy=false;render()});
+}
+function render(){
+  const v=S.view;
+  if(v==='main')return main();if(v==='result')return result();if(v==='leave')return leave();if(v==='admin')return admin();
+}
+function main(){
+  const g=S.gps,gcls=!g?'':g.err?'bad':g.acc>50?'bad':'ok';
+  const gtxt=!g?'ກຳລັງຫາຕຳແໜ່ງ GPS…':g.err?g.err:('ພົບຕຳແໜ່ງແລ້ວ · ຄວາມແມ່ນຍຳ ±'+Math.round(g.acc)+' ແມັດ'+(g.acc>50?' (ອ່ອນເກີນ ອອກບ່ອນໂລ່ງ)':''));
+  const ready=S.email&&S.loc&&g&&!g.err&&S.photo&&!S.busy;
+  $.innerHTML='<div class="card"><h3>ລົງເວລາເຮັດວຽກ</h3><label>Gmail ຂອງທ່ານ</label><input id="em" type="email" inputmode="email" placeholder="name@gmail.com" value="'+esc(S.email)+'" oninput="S.email=this.value;render2()">'
+  +'<label>ຈຸດເຮັດວຽກ</label><select onchange="S.loc=this.value">'+S.locs.map(l=>'<option'+(l===S.loc?' selected':'')+'>'+esc(l)+'</option>').join('')+'</select>'
+  +'<div class="gps '+gcls+'"><span class="dot"></span><span style="flex:1">'+gtxt+'</span><a href="#" onclick="S.gps=null;getGps();render();return false" style="color:inherit;font-weight:700">ຫາໃໝ່</a></div>'
+  +'<label class="selfie" for="ph">'+(S.photo?'<img src="'+S.photo+'">':'<span class="ic">🤳</span><span>ແຕະເພື່ອຖ່າຍເຊວຟີ</span>')+'</label><input id="ph" type="file" accept="image/*" capture="user" hidden onchange="pick(this.files[0])">'
+  +'<div class="row"><button class="in" '+(ready?'':'disabled')+' onclick="act(\'checkin\')">Check-in</button><button class="out" '+(ready?'':'disabled')+' onclick="act(\'checkout\')">Check-out</button></div>'
+  +(S.busy?'<p class="hint" style="text-align:center">ກຳລັງບັນທຶກ…</p>':'')+'</div>'
+  +'<div class="row"><button class="alt" onclick="go(\'leave\')">🏖 ລາພັກວຽກ</button><button class="alt" onclick="go(\'admin\')">🔐 Admin</button></div>';
+}
+function render2(){}
+function go(v){S.view=v;if(v==='leave')loadLeave();render();window.scrollTo(0,0)}
+function result(){
+  const r=S.res||{};
+  $.innerHTML=r.ok?'<div class="res ok"><div class="big">✅</div><h2>'+esc(r.msg)+'</h2><p>'+esc(r.name)+'</p><span class="tag '+(r.status==='ມາຊ້າ'||r.status==='ອອກກ່ອນ'?'t-late':'t-ok')+'">'+esc(r.status)+'</span>'
+   +'<div class="kv"><b>ເວລາ</b><span>'+esc(r.time)+'</span><b>ສະຖານທີ່</b><span>'+esc(r.location)+'</span><b>ຫ່າງຈາກຈຸດ</b><span>'+esc(r.distance)+' ແມັດ</span>'+(r.hours?'<b>ຊົ່ວໂມງເຮັດວຽກ</b><span>'+esc(r.hours)+' ຊມ.</span>':'')+'</div></div>'
+   :'<div class="res err"><div class="big">⚠️</div><h2>ບັນທຶກບໍ່ສຳເລັດ</h2><p>'+esc(r.msg)+'</p></div>';
+  $.innerHTML+='<button class="in" style="width:100%" onclick="S.view=\'main\';S.gps=null;getGps();render()">ກັບຄືນ</button>';
+}
+function loadLeave(){
+  post({action:'leave_info',email:S.email}).then(r=>{S.leave=r;render()}).catch(()=>{});
+}
+function leave(){
+  const L=S.leave,m=(L&&L.today||'2026-10-26').slice(0,7),used=L&&L.used&&L.used[m]||0,q=L?L.quota:5;
+  $.innerHTML='<div class="card"><h3>🏖 ລາພັກວຽກ</h3>'+(L?'<p style="margin:0;font-size:14px">ເດືອນ '+m+' · ໃຊ້ແລ້ວ <b>'+used+'</b> / '+q+' ມື້</p><div class="bar"><i style="width:'+Math.min(100,used/q*100)+'%"></i></div>':'<p class="hint">ກຳລັງໂຫຼດ… (ໃສ່ Gmail ໃນໜ້າຫຼັກກ່ອນ)</p>')
+  +'<label>ເລືອກມື້ທີ່ຕ້ອງການລາ</label>'+S.dates.map((d,i)=>'<input type="date" style="margin-bottom:8px" value="'+d+'" onchange="S.dates['+i+']=this.value">').join('')
+  +'<button class="alt" style="width:100%" onclick="S.dates.push(\'\');render()">+ ເພີ່ມມື້</button>'
+  +'<div class="row"><button class="in" onclick="sendLeave()">ສົ່ງຄຳຂໍລາ</button></div><p class="hint" id="lmsg"></p>'
+  +(L&&L.dates&&L.dates.length?'<h3 style="margin-top:14px">ມື້ທີ່ລາໄວ້</h3>'+L.dates.map(d=>'<div class="li"><span>'+d+'</span>'+(d>=L.today?'<button class="mini" onclick="cancelLeave(\''+d+'\')">ຍົກເລີກ</button>':'')+'</div>').join(''):'')
+  +'</div><button class="alt" style="width:100%" onclick="go(\'main\')">‹ ກັບຄືນ</button>';
+}
+function sendLeave(){post({action:'leave',email:S.email,dates:S.dates.filter(Boolean)}).then(r=>{if(r.ok){S.leave=r;S.dates=['']}render();document.getElementById('lmsg').textContent=r.msg})}
+function cancelLeave(d){post({action:'leave_cancel',email:S.email,date:d}).then(r=>{if(r.ok)S.leave=r;render();document.getElementById('lmsg').textContent=r.msg})}
+function admin(){
+  if(!S.admin){
+    $.innerHTML='<div class="card"><h3>🔐 Admin</h3><label>ລະຫັດ Admin</label><input id="ac" type="password" placeholder="ໃສ່ລະຫັດ"><div class="row"><button class="in" onclick="adminLogin()">ເຂົ້າສູ່ລະບົບ</button></div><p class="hint" id="amsg"></p></div><button class="alt" style="width:100%" onclick="go(\'main\')">‹ ກັບຄືນ</button>';
+    return;
+  }
+  const A=S.admin;
+  $.innerHTML='<div class="tabs"><button class="'+(S.tab==='emp'?'on':'')+'" onclick="S.tab=\'emp\';render()">👥 ພະນັກງານ ('+A.employees.length+')</button><button class="'+(S.tab==='loc'?'on':'')+'" onclick="S.tab=\'loc\';render()">📍 ຈຸດເຮັດວຽກ ('+A.locations.length+')</button></div>'
+  +(S.tab==='emp'?'<div class="card"><h3>ເພີ່ມພະນັກງານ</h3><input id="ne" type="email" placeholder="Gmail" style="margin-bottom:8px"><input id="nn" placeholder="ຊື່-ນາມສະກຸນ"><div class="row"><button class="in" onclick="adm({action:\'admin_add_employee\',email:ne.value,name:nn.value})">+ ເພີ່ມ</button></div><p class="hint" id="amsg"></p></div><div class="card"><h3>ລາຍຊື່</h3>'+A.employees.map(e=>'<div class="li"><span>'+esc(e.name)+'<br><span class="hint">'+esc(e.email)+'</span></span><button class="mini" onclick="adm({action:\'admin_delete_employee\',email:\''+esc(e.email)+'\'})">ລຶບ</button></div>').join('')+'</div>'
+  :'<div class="card"><h3>ເພີ່ມຈຸດເຮັດວຽກ</h3><input id="ln" placeholder="ຊື່ຈຸດ" style="margin-bottom:8px"><div class="row" style="margin:0 0 8px"><input id="la" placeholder="Lat" inputmode="decimal"><input id="lo" placeholder="Lng" inputmode="decimal"></div><input id="lr" placeholder="ລັດສະໝີ (ແມັດ) ເຊັ່ນ 100" inputmode="numeric"><div class="row"><button class="alt" onclick="useHere()">📍 ໃຊ້ຕຳແໜ່ງປັດຈຸບັນ</button><button class="in" onclick="adm({action:\'admin_add_location\',locName:ln.value,lat:la.value,lng:lo.value,radius:lr.value})">+ ເພີ່ມ</button></div><p class="hint" id="amsg"></p></div><div class="card"><h3>ລາຍການຈຸດ</h3>'+A.locations.map(l=>'<div class="li"><span>'+esc(l.name)+'<br><span class="hint">ລັດສະໝີ '+l.radius+' ມ.</span></span><button class="mini" onclick="adm({action:\'admin_delete_location\',locName:\''+esc(l.name)+'\'})">ລຶບ</button></div>').join('')+'</div>')
+  +'<button class="alt" style="width:100%" onclick="S.admin=null;go(\'main\')">ອອກຈາກ Admin</button>';
+}
+function useHere(){if(S.gps&&S.gps.lat){la.value=S.gps.lat.toFixed(6);lo.value=S.gps.lng.toFixed(6)}else if(DEMO){la.value='17.975700';lo.value='102.633100'}}
+function adminLogin(){S.adminCode=document.getElementById('ac').value;post({action:'admin_list',adminCode:S.adminCode}).then(r=>{if(r.ok){S.admin=r;render()}else document.getElementById('amsg').textContent=r.msg}).catch(e=>document.getElementById('amsg').textContent=e.message)}
+function adm(b){b.adminCode=S.adminCode;post(b).then(r=>post({action:'admin_list',adminCode:S.adminCode}).then(l=>{if(l.ok)S.admin=l;render();const m=document.getElementById('amsg');if(m)m.textContent=r.msg}))}
+/* ---- demo ---- */
+function demo(b){
+  const emp=[{email:'somchai@gmail.com',name:'ທ່ານ ສົມໄຊ ວົງດາລາ'},{email:'noy@gmail.com',name:'ນາງ ນ້ອຍ ສີສະຫວັດ'},{email:'khamla@gmail.com',name:'ທ່ານ ຄຳລາ ພົມມະຈັນ'}];
+  const loc=[{name:'ຫ້ອງການໃຫຍ່',radius:100},{name:'ໂຄງການ Solar ແຂວງຄຳມ່ວນ',radius:150}];
+  if(b.action==='admin_list')return b.adminCode===''?{ok:false,msg:'ລະຫັດ Admin ບໍ່ຖືກຕ້ອງ'}:{ok:true,employees:emp,locations:loc};
+  if(b.action==='leave_info'||b.action==='leave')return{ok:true,msg:'ບັນທຶກລາພັກ 2 ມື້ ແລ້ວ',quota:5,used:{'2026-10':2},dates:['2026-10-28','2026-10-29'],today:'2026-10-26'};
+  if(b.action&&b.action.indexOf('admin_')===0)return{ok:true,msg:'ດຳເນີນການສຳເລັດ ✅'};
+  if(Q.get('s')==='result'||Q.get('s')==='ready')return{ok:true,msg:'Check-in ສຳເລັດ',name:'ທ່ານ ສົມໄຊ ວົງດາລາ',time:'07:52:31',status:'ປົກກະຕິ',distance:23,location:'ຫ້ອງການໃຫຍ່'};
+  return{ok:false,msg:'ທ່ານຢູ່ນອກພື້ນທີ່ "ຫ້ອງການໃຫຍ່" (ຫ່າງ 480 ແມັດ, ອະນຸຍາດພາຍໃນ 100 ແມັດ) ຈຶ່ງບໍ່ສາມາດ check ໄດ້'};
+}
+loadLocs();if(S.view==='main')getGps();
+if(DEMO){const s=Q.get('s');
+ if(s==='ready'){S.email='somchai@gmail.com';S.photo='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#cfe3d8"/><circle cx="200" cy="120" r="55" fill="#8fb3a0"/><rect x="110" y="190" width="180" height="110" rx="60" fill="#8fb3a0"/></svg>');S.view='main';getGps()}
+ if(s==='result'){S.res=demo({action:'checkin'});S.view='result'}
+ if(s==='outside'){S.res={ok:false,msg:'ທ່ານຢູ່ນອກພື້ນທີ່ "ຫ້ອງການໃຫຍ່" (ຫ່າງ 480 ແມັດ, ອະນຸຍາດພາຍໃນ 100 ແມັດ) ຈຶ່ງບໍ່ສາມາດ check ໄດ້'};S.view='result'}
+ if(s==='leave'){S.email='somchai@gmail.com';S.view='leave';loadLeave()}
+ if(s==='admin'){S.view='admin'}
+ if(s==='adminin'){S.view='admin';S.adminCode='x';S.admin=demo({action:'admin_list',adminCode:'x'})}
+ if(s==='adminloc'){S.view='admin';S.tab='loc';S.adminCode='x';S.admin=demo({action:'admin_list',adminCode:'x'})}
+ setTimeout(render,200);}
+</script></body></html>
