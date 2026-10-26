@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b6b4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script src="config.js"></script>
+<title>ປະເມີນພະນັກງານ · Incentive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f6fa; --card:#ffffff; --ink:#13213a; --muted:#64708a; --line:#e3e8f0;
+  --navy:#0f2a44; --sun:#f5a524; --sun-soft:#fff4dc; --ok:#1f9d6b; --warn:#d9822b; --bad:#d64545;
+  --s1:#e86a5a; --s2:#f0a060; --s3:#d9c25a; --s4:#7cc47a; --s5:#2fa46d;
+  --shadow:0 1px 2px rgba(15,42,68,.06),0 6px 20px rgba(15,42,68,.07);
+  --r:16px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1524; --card:#142136; --ink:#e8edf6; --muted:#9aa7bd; --line:#24344f;
+    --navy:#0a1a2c; --sun-soft:#3a2e14; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1524; --card:#142136; --ink:#e8edf6; --muted:#9aa7bd; --line:#24344f;
+  --navy:#0a1a2c; --sun-soft:#3a2e14; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans Lao',system-ui,sans-serif;font-size:16px;line-height:1.55}
+button,input,textarea{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 120px}
+.hero{background:linear-gradient(135deg,#0f2a44 0%,#16406a 60%,#1d5a8a 100%);color:#fff;padding:28px 16px 64px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,#f5a524 0%,rgba(245,165,36,.0) 70%);opacity:.55}
+.hero .in{max-width:720px;margin:0 auto;position:relative;z-index:1}
+.hero .org{font-size:13px;opacity:.8;letter-spacing:.02em}
+.hero h1{font-size:24px;margin:4px 0 2px;font-weight:800}
+.hero .en{font-size:13px;opacity:.75}
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:4px 12px;border-radius:99px;font-size:13px;margin-top:12px}
+.lift{margin-top:-44px;position:relative;z-index:2}
+.card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:18px;margin-bottom:14px;border:1px solid var(--line)}
+.muted{color:var(--muted)} .small{font-size:13px} .en-sub{display:block;font-size:12px;color:var(--muted);font-weight:400}
+h2{font-size:19px;margin:0 0 4px} h3{font-size:16px;margin:0}
+.role{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+.role:hover{border-color:var(--sun);transform:translateY(-1px)}
+.role .ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:var(--sun-soft);flex:none}
+.role b{display:block;font-size:17px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:13px 20px;font-weight:700;cursor:pointer;background:var(--navy);color:#fff;transition:.15s}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sun{background:var(--sun);color:#1b1300}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+.btn.block{width:100%}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:13px;padding:8px}
+.field{margin:12px 0}
+.field label{display:block;font-weight:600;margin-bottom:6px;font-size:14px}
+.input{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);outline:none}
+.input:focus{border-color:var(--sun)}
+.pin{letter-spacing:.6em;text-align:center;font-size:24px;font-weight:700}
+.names{display:grid;gap:8px}
+.name{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;text-align:left;width:100%}
+.name.on{border-color:var(--sun);background:var(--sun-soft)}
+.av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none;font-size:16px}
+.err{background:#fde8e8;color:#9b1c1c;padding:10px 12px;border-radius:10px;font-size:14px;margin-top:10px}
+.topbar{position:sticky;top:0;z-index:20;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.prog{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:8px}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),#f7c35c);border-radius:9px;transition:width .3s}
+.who{display:flex;align-items:center;gap:14px}
+.who .av{width:54px;height:54px;font-size:20px}
+.score-live{margin-left:auto;text-align:right}
+.score-live b{font-size:26px;font-weight:800;line-height:1}
+.crit{padding:16px}
+.crit-h{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.wchip{margin-left:auto;font-size:12px;font-weight:700;background:var(--sun-soft);color:#8a5a00;padding:3px 9px;border-radius:99px;white-space:nowrap}
+:root[data-theme="dark"] .wchip{color:#f5c56a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wchip{color:#f5c56a}}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.sbtn{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:10px 0 8px;cursor:pointer;font-weight:800;font-size:18px;transition:.12s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.sbtn small{font-size:10px;font-weight:500;color:var(--muted)}
+.sbtn:hover{transform:translateY(-1px)}
+.sbtn.on{color:#fff;border-color:transparent;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.sbtn.on small{color:rgba(255,255,255,.9)}
+.sbtn.v1.on{background:var(--s1)} .sbtn.v2.on{background:var(--s2)} .sbtn.v3.on{background:var(--s3)} .sbtn.v4.on{background:var(--s4)} .sbtn.v5.on{background:var(--s5)}
+.anchor{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--bg);font-size:14px;border-left:4px solid var(--line)}
+.anchor.v1{border-color:var(--s1)} .anchor.v2{border-color:var(--s2)} .anchor.v3{border-color:var(--s3)} .anchor.v4{border-color:var(--s4)} .anchor.v5{border-color:var(--s5)}
+.reason{margin-top:10px}
+.reason textarea,.note textarea{width:100%;min-height:64px;border-radius:10px;border:1.5px solid var(--warn);padding:10px;background:var(--card);resize:vertical;outline:none}
+.note textarea{border-color:var(--line)}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;background:linear-gradient(180deg,rgba(0,0,0,0),var(--bg) 30%);padding:18px 16px 16px}
+.dock .in{max-width:720px;margin:0 auto;display:flex;gap:10px}
+.dock .btn{flex:1}
+.tip{display:flex;gap:10px;padding:12px;border-radius:12px;background:var(--sun-soft);font-size:14px;margin-bottom:10px}
+.legend{display:grid;gap:6px;margin-top:10px}
+.legend div{display:flex;gap:10px;align-items:center;font-size:14px}
+.dot{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:13px;flex:none}
+.rank-item{display:flex;align-items:center;gap:12px;padding:12px;border:1.5px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card)}
+.medal{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:800;background:var(--bg);flex:none}
+.medal.m1{background:#f5c542;color:#4a3500} .medal.m2{background:#cfd6e0;color:#2b3442} .medal.m3{background:#e0a36b;color:#3d2410}
+.arrows{margin-left:auto;display:flex;gap:6px}
+.arrows button{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:var(--card);cursor:pointer;font-size:16px}
+.arrows button:disabled{opacity:.3}
+.bar{height:10px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:9px}
+.row{display:flex;align-items:center;gap:10px}
+.warnbox{background:#fff3e0;color:#7a4300;border-radius:12px;padding:12px;font-size:14px;margin-bottom:12px}
+:root[data-theme="dark"] .warnbox{background:#3a2a12;color:#f3cf98}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .warnbox{background:#3a2a12;color:#f3cf98} :root:not([data-theme="light"]) .err{background:#3c1a1a;color:#f6b4b4}}
+.done{text-align:center;padding:40px 18px}
+.done .big{font-size:64px}
+/* dashboard */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:560px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
+.stat b{display:block;font-size:22px;font-weight:800}
+.person{cursor:pointer}
+.person .top{display:flex;align-items:center;gap:12px}
+.final{margin-left:auto;text-align:right}
+.final b{font-size:28px;font-weight:800;line-height:1}
+.grade{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;margin-top:4px}
+.g-a{background:#d9f5e7;color:#0d6b43} .g-b{background:#e2f0ff;color:#1b4f8a} .g-c{background:#eef3d6;color:#56651a} .g-d{background:#fff0d9;color:#8a5200} .g-e{background:#f3e8ff;color:#5b2a8a} .g-none{background:var(--line);color:var(--muted)}
+.mini{display:grid;grid-template-columns:110px 1fr 40px;gap:8px;align-items:center;font-size:13px;margin:6px 0}
+@media(min-width:560px){.mini{grid-template-columns:200px 1fr 40px}}
+.detail{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line)}
+.fb{display:grid;gap:8px;grid-template-columns:1fr;margin:10px 0}
+@media(min-width:560px){.fb{grid-template-columns:1fr 1fr}}
+.fb div{background:var(--bg);border-radius:10px;padding:10px;font-size:14px}
+.quote{font-size:13px;background:var(--bg);padding:8px 10px;border-radius:8px;margin:6px 0}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:14px;box-shadow:var(--shadow)}
+.tab{flex:1;border:0;background:transparent;border-radius:10px;padding:10px 8px;font-weight:700;cursor:pointer;color:var(--muted)}
+.tab.on{background:var(--navy);color:#fff}
+.btn.sm{padding:8px 12px;font-size:13px;border-radius:10px}
+.addbox{margin-top:14px;padding:14px;border-radius:12px;background:var(--bg);border:1.5px dashed var(--line)}
+.okbox{margin-top:14px;padding:12px 14px;border-radius:12px;background:#e3f6ec;color:#0d5c3a;font-size:14px}
+.pinbig{font-size:26px;font-weight:800;letter-spacing:.3em;font-variant-numeric:tabular-nums;margin-right:auto}
+.pinchip{font-weight:800;letter-spacing:.2em;font-variant-numeric:tabular-nums;background:var(--bg);border:1px solid var(--line);padding:3px 10px;border-radius:8px}
+.status{font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;margin-left:auto}
+.s-on{background:#d9f5e7;color:#0d6b43} .s-off{background:var(--line);color:var(--muted)}
+.emp.off{opacity:.6}
+.role:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.wincard{display:flex;gap:14px;align-items:flex-start;border-radius:var(--r);padding:16px;margin-bottom:14px;border:1.5px solid var(--line);background:var(--card);box-shadow:var(--shadow)}
+.wincard.open{border-color:#8fd3b0}
+.wincard.closed{border-color:var(--line)}
+.wic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:var(--bg);flex:none}
+.pulse{width:12px;height:12px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 rgba(31,157,107,.5);animation:pl 1.8s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 10px rgba(31,157,107,0)}100%{box-shadow:0 0 0 0 rgba(31,157,107,0)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none}.fade{animation:none}}
+.countdown{margin-top:8px;font-size:14px;background:var(--sun-soft);padding:6px 10px;border-radius:8px;display:inline-block}
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(16px,1fr));gap:3px;margin-top:12px}
+.dd{height:20px;border-radius:5px;background:var(--bg);font-size:9px;display:grid;place-items:center;color:var(--muted);font-variant-numeric:tabular-nums}
+.dd.w{background:var(--sun);color:#1b1300;font-weight:700}
+.dd.t{outline:2px solid var(--ink);outline-offset:1px;font-weight:800;color:var(--ink)}
+.dd.w.t{color:#1b1300}
+.strip-l{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap}
+.lg{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.lg.w{background:var(--sun)} .lg.t{outline:2px solid var(--ink);background:var(--bg)}
+.demo{background:#fff4dc;color:#7a4b00;text-align:center;font-size:12px;padding:6px}
+.spin{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.center{text-align:center}
+.fade{animation:fd .25s ease}
+@keyframes fd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a href="./" style="position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;z-index:50;background:#ffffffee;border:1px solid #0b6b4a55;color:#0b6b4a;border-radius:20px;padding:6px 12px;font:600 13px system-ui;text-decoration:none">‹ ໜ້າຫຼັກ</a>
+<div id="app"></div>
+
+<script>
+/* ============ API bridge (Apps Script / Demo) ============ */
+const DEMO = false;
+function api(fn){
+  const args = Array.prototype.slice.call(arguments,1);
+  if (typeof API_URL==='undefined' || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(API_URL))
+    return Promise.reject(new Error('API_URL ໃນ config.js ຍັງບໍ່ຖືກຕ້ອງ'));
+  return fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:fn,args:args})})
+    .then(r=>r.json())
+    .then(j=>{ if(!j.ok) throw new Error(j.error||'ຜິດພາດ'); return j.data; })
+    .catch(e=>{ throw (e instanceof TypeError ? new Error('ເຊື່ອມຕໍ່ບໍ່ໄດ້ — ກວດອິນເຕີເນັດ ແລະ API_URL / Deploy ເວີຊັນໃໝ່') : e); });
+}
+
+/* ============ State ============ */
+const S = { init:null, view:'home', role:null, token:null, me:null, idx:0, ratings:{}, ranking:[], selId:null, err:'', busy:false, res:null, open:{}, tab:'res', emps:null, add:{open:false,msg:null} };
+const $app = document.getElementById('app');
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const COLORS = ['#3b82c4','#d9822b','#2fa46d','#8b5cf6','#e0567a','#0ea5a4','#c2410c','#4f46e5'];
+const LV = ['ຕ້ອງປັບປຸງຫຼາຍ','ຕ້ອງປັບປຸງ','ຕາມມາດຕະຖານ','ດີ','ດີເລີດ'];
+function shortName(n){ return String(n).replace(/^ທ່ານ\s*ນາງ\s*/,'').replace(/^ທ່ານ\s*/,'').replace(/^ນາງ\s*/,''); }
+function initials(n){ const s=shortName(n).trim(); return s ? s.charAt(0) : '?'; }
+function colorOf(id){ let h=0; String(id).split('').forEach(c=>h=(h*31+c.charCodeAt(0))>>>0); return COLORS[h%COLORS.length]; }
+function avatar(p,size){ return '<div class="av" style="background:'+colorOf(p.id)+(size?';width:'+size+'px;height:'+size+'px':'')+'">'+esc(initials(p.name))+'</div>'; }
+function targets(){ return S.init.employees.filter(e=>e.id!==(S.me&&S.me.id)); }
+function critW(){ return S.init.criteria.reduce((a,c)=>a+c.weight,0)||1; }
+function rawScore(r){ if(!r) return null; let t=0,n=0; S.init.criteria.forEach(c=>{const v=r.scores[c.id]; if(v){t+=c.weight*(v-1)/4;n++;}}); return n===S.init.criteria.length? Math.round(100*t/critW()) : null; }
+function partialScore(r){ let t=0,w=0; S.init.criteria.forEach(c=>{const v=r.scores[c.id]; if(v){t+=c.weight*(v-1)/4;w+=c.weight;}}); return w? Math.round(100*t/w):null; }
+function needReason(v){ return S.init.requireReason && (v===5 || v<=2); }
+function personComplete(id){ const r=S.ratings[id]; if(!r) return false; return S.init.criteria.every(c=>{const v=r.scores[c.id]; return v && (!needReason(v) || (r.reasons[c.id]||'').trim().length>=5);}); }
+function go(v){ S.view=v; S.err=''; render(); window.scrollTo(0,0); }
+
+/* ============ Boot ============ */
+(function boot(){
+  if (DEMO) document.getElementById('demoBar').innerHTML='<div class="demo">ໂໝດຕົວຢ່າງ (Demo) — ຂໍ້ມູນສົມມຸດ · PIN: 1111 · ລະຫັດຜູ້ບໍລິຫານ: EXEC01 · Admin: ADMIN1</div>';
+  $app.innerHTML='<div class="hero"><div class="in"><h1>ກຳລັງໂຫຼດ…</h1></div></div>';
+  api('apiInit').then(d=>{ S.init=d; if(DEMO && location.hash==='#results') return demoResults(); render(); }).catch(e=>{ $app.innerHTML='<div class="wrap"><div class="err">'+esc(e.message||e)+'</div></div>'; });
+})();
+
+function hero(title,en){
+  return '<div class="hero"><div class="in"><div class="org">'+esc(S.init.org)+'</div><h1>'+title+'</h1><div class="en">'+(en||'')+'</div>'+
+    '<div class="pill">📅 '+esc(S.init.period)+'</div></div></div>';
+}
+
+/* ============ Render ============ */
+function render(){
+  const v=S.view;
+  if(v==='home') return vHome();
+  if(v==='peerLogin') return vPeerLogin();
+  if(v==='execLogin') return vExecLogin();
+  if(v==='adminLogin') return vAdminLogin();
+  if(v==='guide') return vGuide();
+  if(v==='rate') return vRate();
+  if(v==='rank') return vRank();
+  if(v==='review') return vReview();
+  if(v==='done') return vDone();
+  if(v==='dash') return vDash();
+}
+
+function vHome(){
+  const I=S.init;
+  $app.innerHTML = hero('ແບບປະເມີນພະນັກງານ ເພື່ອ Incentive','Employee evaluation for incentive') +
+  '<div class="wrap lift fade">'+
+   winCard()+
+   '<div class="card"><div class="small muted">ຄະແນນລວມ = ພະນັກງານປະເມີນກັນເອງ <b>'+Math.round(I.peerW*100)+'%</b> + ຜູ້ບໍລິຫານປະເມີນ <b>'+Math.round(I.execW*100)+'%</b>. ໃຊ້ເວລາປະມານ 5–8 ນາທີ. ຄຳຕອບຂອງທ່ານເປັນຄວາມລັບ.</div></div>'+
+   '<button class="role" onclick="go(\'peerLogin\')" '+(I.open?'':'disabled')+'><div class="ic">🤝</div><div><b>ພະນັກງານ</b><span class="en-sub">Employee · ປະເມີນເພື່ອນຮ່ວມງານ ດ້ວຍ PIN ຂອງທ່ານ</span></div></button>'+
+   '<button class="role" onclick="go(\'execLogin\')" '+(I.open?'':'disabled')+'><div class="ic">🧭</div><div><b>ຜູ້ບໍລິຫານ</b><span class="en-sub">Executive · ຕ້ອງມີລະຫັດ</span></div></button>'+
+   (DEMO?'<button class="role" onclick="demoResults()"><div class="ic">📊</div><div><b>ເບິ່ງຕົວຢ່າງຜົນການປະເມີນ</b><span class="en-sub">Sample results dashboard · ຂໍ້ມູນສົມມຸດ</span></div></button>':'')+
+   '<div class="center"><button class="linkbtn" onclick="go(\'adminLogin\')">📊 ເບິ່ງຜົນການປະເມີນ (Admin)</button>'+
+   (DEMO?'<button class="linkbtn" onclick="Demo.toggleClosed()">🔁 Demo: ສະຫຼັບ ເບິ່ງໜ້າຕອນ'+(I.open?'ປິດ':'ເປີດ')+'</button>':'')+'</div>'+
+  '</div>';
+}
+
+function monthStrip(w){
+  const pr=String(w.today||'').split('/'); if(pr.length<3) return '';
+  const d=+pr[0], m=+pr[1], y=+pr[2], dim=new Date(y,m,0).getDate();
+  let h='<div class="strip" aria-label="ວັນທີເປີດປະເມີນໃນເດືອນນີ້">';
+  for(let i=1;i<=dim;i++){ const inW=i>=w.from&&i<=w.to; h+='<span class="dd'+(inW?' w':'')+(i===d?' t':'')+'" title="'+i+'">'+(inW||i===d||i===1||i===dim?i:'')+'</span>'; }
+  return h+'</div><div class="strip-l small muted"><span><i class="lg w"></i>ວັນເປີດປະເມີນ</span><span><i class="lg t"></i>ມື້ນີ້ '+esc(w.today)+'</span></div>';
+}
+function winCard(){
+  const w=S.init.win||{}, I=S.init;
+  if(!w.auto){ return I.open?'':'<div class="wincard closed"><div class="wic">🔒</div><div><b>ປິດການປະເມີນ</b><span class="en-sub">ຜູ້ດູແລລະບົບປິດໄວ້ຊົ່ວຄາວ · Evaluation is closed</span></div></div>'; }
+  if(I.open){
+    return '<div class="wincard open"><div class="wic"><span class="pulse"></span></div><div style="flex:1;min-width:0"><b>ເປີດຮັບການປະເມີນ</b> <span class="small">· ຮອດວັນທີ '+esc(w.closesOn)+' ('+(w.daysLeft===1?'ມື້ສຸດທ້າຍ!':'ເຫຼືອ '+w.daysLeft+' ມື້')+')</span>'+
+      '<span class="en-sub">Open until '+esc(w.closesOn)+' · ເປີດທຸກວັນທີ '+w.from+'–'+w.to+' ຂອງເດືອນ</span>'+monthStrip(w)+'</div></div>';
+  }
+  return '<div class="wincard closed"><div class="wic">🔒</div><div style="flex:1;min-width:0"><b>ປິດການປະເມີນ</b>'+
+    '<span class="en-sub">'+(w.manualClosed?'ຜູ້ດູແລລະບົບປິດໄວ້ຊົ່ວຄາວ · Closed by admin':'ລະບົບເປີດສະເພາະວັນທີ '+w.from+'–'+w.to+' ຂອງທຸກເດືອນ · Opens on the '+w.from+'th–'+w.to+'th of each month')+'</span>'+
+    (w.opensOn&&!w.manualClosed?'<div class="countdown">ຮອບຕໍ່ໄປເປີດ <b>'+esc(w.opensOn)+'</b> · ອີກ <b>'+w.daysUntil+'</b> ມື້</div>':'')+monthStrip(w)+'</div></div>';
+}
+
+function vPeerLogin(){
+  const list=S.init.employees.map(e=>'<button class="name'+(S.selId===e.id?' on':'')+'" onclick="S.selId=\''+e.id+'\';render();setTimeout(()=>{const p=document.getElementById(\'pin\');p&&p.focus()},50)">'+avatar(e)+'<div><b>'+esc(e.name)+'</b>'+(e.position?'<span class="en-sub">'+esc(e.position)+'</span>':'')+'</div></button>').join('');
+  $app.innerHTML = hero('ເຂົ້າສູ່ລະບົບ','Sign in as employee')+
+  '<div class="wrap lift fade"><div class="card"><h2>1. ເລືອກຊື່ຂອງທ່ານ</h2><div class="names" style="margin-top:10px">'+list+'</div>'+
+  (S.selId?'<div class="field" style="margin-top:16px"><label>2. ໃສ່ PIN 4 ຕົວ ຂອງທ່ານ</label><input id="pin" class="input pin" inputmode="numeric" maxlength="6" autocomplete="off" onkeydown="if(event.key===\'Enter\')doPeerLogin()"></div>'+
+   '<button class="btn sun block" onclick="doPeerLogin()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'ເລີ່ມປະເມີນ →')+'</button>':'')+
+  (S.err?'<div class="err">'+esc(S.err)+'</div>':'')+
+  '</div><button class="linkbtn" onclick="go(\'home\')">← ກັບຄືນ</button></div>';
+}
+function doPeerLogin(){
+  const pin=(document.getElementById('pin')||{}).value||'';
+  S.busy=true; S.err=''; render();
+  api('apiLoginEmployee',S.selId,pin).then(r=>{ S.busy=false; startSession('peer',r); }).catch(e=>{ S.busy=false; S.err=e.message||e; render(); });
+}
+function vExecLogin(){
+  $app.innerHTML = hero('ຜູ້ບໍລິຫານ','Executive sign-in')+
+  '<div class="wrap lift fade"><div class="card">'+
+  '<div class="field"><label>ຊື່ຂອງທ່ານ</label><input id="en" class="input" placeholder="ເຊັ່ນ: ຜູ້ອຳນວຍການ"></div>'+
+  '<div class="field"><label>ລະຫັດຜູ້ບໍລິຫານ</label><input id="ec" type="password" class="input" onkeydown="if(event.key===\'Enter\')doExecLogin()"></div>'+
+  '<button class="btn sun block" onclick="doExecLogin()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'ເຂົ້າສູ່ລະບົບ →')+'</button>'+
+  (S.err?'<div class="err">'+esc(S.err)+'</div>':'')+
+  '</div><button class="linkbtn" onclick="go(\'home\')">← ກັບຄືນ</button></div>';
+}
+function doExecLogin(){
+  const n=document.getElementById('en').value, c=document.getElementById('ec').value;
+  S.busy=true; S.err=''; render();
+  api('apiLoginExec',n,c).then(r=>{ S.busy=false; startSession('exec',r); }).catch(e=>{ S.busy=false; S.err=e.message||e; render(); });
+}
+function vAdminLogin(){
+  $app.innerHTML = hero('ຜົນການປະເມີນ','Results dashboard')+
+  '<div class="wrap lift fade"><div class="card">'+
+  '<div class="field"><label>ລະຫັດ Admin</label><input id="ac" type="password" class="input" onkeydown="if(event.key===\'Enter\')doAdminLogin()"></div>'+
+  '<button class="btn block" onclick="doAdminLogin()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'ເບິ່ງຜົນ →')+'</button>'+
+  (S.err?'<div class="err">'+esc(S.err)+'</div>':'')+
+  '</div><button class="linkbtn" onclick="go(\'home\')">← ກັບຄືນ</button></div>';
+}
+function doAdminLogin(){
+  const c=document.getElementById('ac').value;
+  S.busy=true; S.err=''; render();
+  api('apiLoginAdmin',c).then(r=>{ S.token=r.token; return api('apiResults',S.token); })
+   .then(res=>{ S.busy=false; S.res=res; go('dash'); })
+   .catch(e=>{ S.busy=false; S.err=e.message||e; render(); });
+}
+
+function startSession(role,r){
+  S.role=role; S.token=r.token; S.me=r.me; S.idx=0; S.ratings={}; S.ranking=[];
+  targets().forEach(t=>S.ratings[t.id]={scores:{},reasons:{},note:''});
+  S.already=r.done;
+  go('guide');
+}
+
+function vGuide(){
+  const c=S.init.criteria;
+  $app.innerHTML = hero('ສະບາຍດີ, '+esc(shortName(S.me.name)),'Before you start')+
+  '<div class="wrap lift fade">'+
+  (S.already?'<div class="warnbox">ທ່ານເຄີຍສົ່ງການປະເມີນຮອບນີ້ແລ້ວ — ຖ້າສົ່ງໃໝ່ ຈະແທນທີ່ອັນເກົ່າ.</div>':'')+
+  '<div class="card"><h2>ວິທີໃຫ້ຄະແນນທີ່ຍຸຕິທຳ</h2><span class="en-sub">How to score fairly</span>'+
+  '<div class="legend">'+
+   [1,2,3,4,5].map(v=>'<div><span class="dot" style="background:var(--s'+v+')">'+v+'</span><span><b>'+LV[v-1]+'</b>'+(v===3?' — ເຮັດວຽກໄດ້ຕາມທີ່ມອບໝາຍ (ຈຸດເລີ່ມຕົ້ນ)':v===5?' — ສະເພາະຜົນງານໂດດເດັ່ນແທ້ໆ':'')+'</span></div>').join('')+
+  '</div></div>'+
+  '<div class="tip">💡<div><b>ເລີ່ມຈາກ 3</b> ແລ້ວຂະຫຍັບຂຶ້ນ/ລົງ ຕາມພຶດຕິກຳຈິງ. ການໃຫ້ 5 ທຸກຄົນ ເຮັດໃຫ້ຄົນທີ່ເຮັດວຽກໜັກແທ້ ບໍ່ໄດ້ຮັບການຍອມຮັບ.</div></div>'+
+  '<div class="tip">✍️<div>ຖ້າໃຫ້ <b>5</b> ຫຼື <b>1–2</b> ກະລຸນາຂຽນຕົວຢ່າງສັ້ນໆ ວ່າເປັນຫຍັງ.</div></div>'+
+  '<div class="tip">⚖️<div>ລະບົບຈະປັບຄວາມລຳອຽງອັດຕະໂນມັດ (ຄົນທີ່ໃຫ້ຄະແນນສູງທຸກຄົນ ຫຼື ຕ່ຳທຸກຄົນ) — ສິ່ງທີ່ສຳຄັນຄື <b>ຄວາມແຕກຕ່າງລະຫວ່າງຄົນ</b>.</div></div>'+
+  '<div class="card"><h3>ເກນ ແລະ ນ້ຳໜັກ</h3><div style="margin-top:8px">'+
+   c.map(x=>'<div class="mini" style="grid-template-columns:1fr 70px 36px"><span>'+esc(x.name)+'</span><div class="bar"><i style="width:'+(x.weight/critW()*100*2.5)+'%;background:var(--sun)"></i></div><b>'+x.weight+'%</b></div>').join('')+
+  '</div></div></div>'+
+  '<div class="dock"><div class="in"><button class="btn sun" onclick="go(\'rate\')">ເລີ່ມ: ປະເມີນ '+targets().length+' ຄົນ →</button></div></div>';
+}
+
+function vRate(){
+  const T=targets(), p=T[S.idx], r=S.ratings[p.id], C=S.init.criteria;
+  const total = T.length + (S.role==='peer'&&S.init.rankW>0?1:0) + 1;
+  const ps = partialScore(r);
+  let h = '<div class="wrap fade"><div class="topbar"><div class="row small muted"><span>ຄົນທີ '+(S.idx+1)+' / '+T.length+'</span><span style="margin-left:auto">'+T.map((t,i)=>'<span style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-left:4px;background:'+(personComplete(t.id)?'var(--ok)':i===S.idx?'var(--sun)':'var(--line)')+'"></span>').join('')+'</span></div>'+
+    '<div class="prog"><i style="width:'+((S.idx)/total*100)+'%"></i></div></div>';
+  h += '<div class="card"><div class="who">'+avatar(p)+'<div><div class="small muted">ກຳລັງປະເມີນ</div><h2>'+esc(p.name)+'</h2>'+(p.position?'<span class="en-sub">'+esc(p.position)+'</span>':'')+'</div>'+
+       '<div class="score-live"><b id="live">'+(ps==null?'–':ps)+'</b><div class="small muted">/100</div></div></div></div>';
+  C.forEach((c,ci)=>{
+    const v=r.scores[c.id];
+    h += '<div class="card crit"><div class="crit-h"><div><h3>'+(ci+1)+'. '+esc(c.name)+'</h3><span class="en-sub">'+esc(c.en)+'</span></div><span class="wchip">'+c.weight+'%</span></div>'+
+      '<div class="scale">'+[1,2,3,4,5].map(n=>'<button class="sbtn v'+n+(v===n?' on':'')+'" onclick="setScore(\''+p.id+'\',\''+c.id+'\','+n+')">'+n+'<small>'+LV[n-1].replace('ຕ້ອງປັບປຸງຫຼາຍ','ປັບປຸງຫຼາຍ').replace('ຕ້ອງປັບປຸງ','ປັບປຸງ').replace('ຕາມມາດຕະຖານ','ມາດຕະຖານ')+'</small></button>').join('')+'</div>'+
+      (v? '<div class="anchor v'+v+'"><b>'+v+' · '+LV[v-1]+':</b> '+esc(c.levels[v-1])+(c.levelsEn[v-1]?'<span class="en-sub">'+esc(c.levelsEn[v-1])+'</span>':'')+'</div>'
+         : '<div class="anchor"><span class="muted">ມາດຕະຖານ (3):</span> '+esc(c.levels[2])+'</div>')+
+      (v && needReason(v)? '<div class="reason"><textarea placeholder="ຕົວຢ່າງ / ເຫດຜົນ ທີ່ໃຫ້ '+v+' (ຢ່າງໜ້ອຍ 5 ຕົວອັກສອນ)" oninput="S.ratings[\''+p.id+'\'].reasons[\''+c.id+'\']=this.value;updDock()">'+esc(r.reasons[c.id]||'')+'</textarea></div>':'')+
+    '</div>';
+  });
+  h += '<div class="card note"><h3>ຄຳເຫັນເພີ່ມເຕີມ (ບໍ່ບັງຄັບ)</h3><span class="en-sub">ສິ່ງທີ່ຄົນນີ້ເຮັດໄດ້ດີ ຫຼື ຄວນພັດທະນາ — ຈະສະແດງແບບບໍ່ລະບຸຊື່</span><textarea style="margin-top:8px" oninput="S.ratings[\''+p.id+'\'].note=this.value">'+esc(r.note)+'</textarea></div></div>';
+  h += '<div class="dock"><div class="in"><button class="btn ghost" onclick="prevP()">←</button><button id="nx" class="btn sun" onclick="nextP()">'+(S.idx<T.length-1?'ຄົນຕໍ່ໄປ →':'ຕໍ່ໄປ →')+'</button></div></div>';
+  $app.innerHTML=h; updDock();
+}
+function setScore(pid,cid,n){
+  const y=window.scrollY; S.ratings[pid].scores[cid]=n; render(); window.scrollTo(0,y);
+}
+function updDock(){ const b=document.getElementById('nx'); if(b){ const p=targets()[S.idx]; b.disabled=!personComplete(p.id); } }
+function prevP(){ if(S.idx>0){S.idx--; go('rate');} else go('guide'); }
+function nextP(){
+  const T=targets();
+  if(S.idx<T.length-1){ S.idx++; go('rate'); return; }
+  if(S.role==='peer' && S.init.rankW>0){
+    if(S.ranking.length!==T.length) S.ranking = T.slice().sort((a,b)=>(rawScore(S.ratings[b.id])||0)-(rawScore(S.ratings[a.id])||0)).map(t=>t.id);
+    go('rank');
+  } else go('review');
+}
+
+function vRank(){
+  const by={}; S.init.employees.forEach(e=>by[e.id]=e);
+  let h='<div class="wrap fade"><div class="topbar"><div class="small muted">ຂັ້ນສຸດທ້າຍ</div><div class="prog"><i style="width:85%"></i></div></div>'+
+   '<div class="card"><h2>🏆 ຈັດອັນດັບ: ໃຜມີສ່ວນຮ່ວມໃຫ້ອົງກອນຫຼາຍທີ່ສຸດ?</h2><span class="en-sub">Rank who contributed most this period</span>'+
+   '<div class="small muted" style="margin-top:8px">ລຽງໄວ້ໃຫ້ແລ້ວຕາມຄະແນນທີ່ທ່ານໃຫ້ — ກົດ ↑ ↓ ເພື່ອປັບ. ອັນດັບນີ້ມີນ້ຳໜັກ '+Math.round(S.init.rankW*100)+'% ຂອງສ່ວນພະນັກງານ.</div></div>';
+  S.ranking.forEach((id,i)=>{
+    const p=by[id];
+    h+='<div class="rank-item fade"><div class="medal'+(i<3?' m'+(i+1):'')+'">'+(i+1)+'</div>'+avatar(p)+'<div><b>'+esc(shortName(p.name))+'</b><span class="en-sub">ຄະແນນທີ່ທ່ານໃຫ້: '+rawScore(S.ratings[id])+'/100</span></div>'+
+       '<div class="arrows"><button onclick="mv('+i+',-1)" '+(i===0?'disabled':'')+'>↑</button><button onclick="mv('+i+',1)" '+(i===S.ranking.length-1?'disabled':'')+'>↓</button></div></div>';
+  });
+  h+='</div><div class="dock"><div class="in"><button class="btn ghost" onclick="S.idx=targets().length-1;go(\'rate\')">←</button><button class="btn sun" onclick="go(\'review\')">ທົບທວນ →</button></div></div>';
+  $app.innerHTML=h;
+}
+function mv(i,d){ const a=S.ranking, j=i+d; if(j<0||j>=a.length) return; [a[i],a[j]]=[a[j],a[i]]; render(); }
+
+function vReview(){
+  const T=targets();
+  const sc=T.map(t=>({p:t, s:rawScore(S.ratings[t.id])}));
+  const vals=sc.map(x=>x.s), spread=Math.max.apply(null,vals)-Math.min.apply(null,vals);
+  let fives=0, all=0; T.forEach(t=>S.init.criteria.forEach(c=>{all++; if(S.ratings[t.id].scores[c.id]===5) fives++;}));
+  let h='<div class="wrap fade"><div class="topbar"><div class="small muted">ທົບທວນກ່ອນສົ່ງ</div><div class="prog"><i style="width:95%"></i></div></div>';
+  if(spread<8) h+='<div class="warnbox">⚖️ ທ່ານໃຫ້ຄະແນນທຸກຄົນ <b>ໃກ້ຄຽງກັນຫຼາຍ</b> (ຫ່າງກັນ '+spread+' ຄະແນນ). ຖ້າມີຄົນທີ່ເຮັດວຽກດີກວ່າແທ້ ລອງກັບໄປທົບທວນ — ເພື່ອໃຫ້ Incentive ສະທ້ອນຜົນງານຈິງ.</div>';
+  if(all && fives/all>0.5) h+='<div class="warnbox">⭐ ມີຄະແນນ 5 ຫຼາຍກວ່າເຄິ່ງໜຶ່ງ ('+fives+'/'+all+'). ຄະແນນ 5 ຄວນສະຫງວນໄວ້ສຳລັບຜົນງານໂດດເດັ່ນແທ້ໆ.</div>';
+  h+='<div class="card"><h2>ສະຫຼຸບຄະແນນທີ່ທ່ານໃຫ້</h2><span class="en-sub">Your scores (before calibration)</span><div style="margin-top:12px">';
+  sc.sort((a,b)=>b.s-a.s).forEach(x=>{
+    h+='<div class="row" style="margin:10px 0">'+avatar(x.p,34)+'<div style="flex:1"><div class="row small"><b>'+esc(shortName(x.p.name))+'</b><span style="margin-left:auto;font-weight:800">'+x.s+'</span></div><div class="bar"><i style="width:'+x.s+'%;background:linear-gradient(90deg,var(--sun),#f7c35c)"></i></div></div>'+
+       '<button class="linkbtn" onclick="S.idx='+T.indexOf(x.p)+';go(\'rate\')">ແກ້</button></div>';
+  });
+  h+='</div></div>'+(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+'</div>';
+  h+='<div class="dock"><div class="in"><button class="btn ghost" onclick="back2()">←</button><button class="btn sun" onclick="submitAll()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span> ກຳລັງສົ່ງ':'✓ ສົ່ງການປະເມີນ')+'</button></div></div>';
+  $app.innerHTML=h;
+}
+function back2(){ if(S.role==='peer'&&S.init.rankW>0) go('rank'); else { S.idx=targets().length-1; go('rate'); } }
+function submitAll(){
+  const payload={ ratings: targets().map(t=>({rateeId:t.id, scores:S.ratings[t.id].scores, reasons:S.ratings[t.id].reasons, note:S.ratings[t.id].note})), ranking:S.ranking };
+  S.busy=true; S.err=''; render();
+  api('apiSubmit',S.token,payload).then(()=>{ S.busy=false; go('done'); }).catch(e=>{ S.busy=false; S.err=e.message||e; render(); });
+}
+function vDone(){
+  $app.innerHTML='<div class="wrap fade"><div class="card done" style="margin-top:40px"><div class="big">🌟</div><h2>ຂອບໃຈທີ່ປະເມີນຢ່າງຍຸຕິທຳ</h2><p class="muted">Thank you for your honest evaluation.<br>ການປະເມີນຂອງທ່ານຖືກບັນທຶກແລ້ວ.</p><button class="btn ghost" onclick="S.selId=null;S.token=null;go(\'home\')">ກັບໜ້າຫຼັກ</button></div></div>';
+}
+
+/* ============ Dashboard ============ */
+function fmt(n){ return n==null?'–':Number(n).toLocaleString('en-US'); }
+function vDash(){
+  const R=S.res, st=R.stats;
+  let h='<div class="hero"><div class="in"><div class="org">'+esc(R.org)+'</div><h1>ຜົນການປະເມີນ</h1><div class="en">Evaluation results</div><div class="pill">📅 '+esc(R.period)+'</div></div></div>';
+  h+='<div class="wrap lift fade">'+tabsHtml();
+  if(S.tab==='emp'){ $app.innerHTML=h+empHtml()+'</div>'; return; }
+  const ps=R.periods||[R.period], wo=R.win&&R.win.open;
+  h+='<div class="row" style="gap:10px;margin-bottom:12px;flex-wrap:wrap"><label for="per" class="small muted">ຮອບການປະເມີນ</label>'+
+    '<select id="per" class="input" style="width:auto;flex:1;min-width:150px;padding:10px 12px" onchange="S.period=this.value;refreshDash()">'+ps.map(p=>'<option'+(p===R.period?' selected':'')+'>'+esc(p)+'</option>').join('')+'</select>'+
+    '<span class="status '+(wo?'s-on':'s-off')+'" style="margin-left:0">'+(wo?'ກຳລັງເປີດປະເມີນ · ຮອດ '+esc(R.win.closesOn):'ປິດການປະເມີນ'+(R.win&&R.win.opensOn?' · ເປີດ '+esc(R.win.opensOn):''))+'</span></div>';
+  h+='<div class="stats">'+
+    '<div class="stat"><span class="small muted">ພະນັກງານສົ່ງແລ້ວ</span><b>'+st.peerSubmitted+' / '+st.peerExpected+'</b></div>'+
+    '<div class="stat"><span class="small muted">ຜູ້ບໍລິຫານສົ່ງແລ້ວ</span><b>'+st.execCount+'</b></div>'+
+    '<div class="stat"><span class="small muted">ຄະແນນສະເລ່ຍ</span><b>'+fmt(st.avg)+'</b></div>'+
+    '<div class="stat"><span class="small muted">ຫ່າງກັນ (ສູງ–ຕ່ຳ)</span><b>'+fmt(st.spread)+'</b></div></div>';
+  if(st.flatRaters||st.outliers) h+='<div class="warnbox">🔎 ຄຸນນະພາບຂໍ້ມູນ: '+(st.flatRaters?st.flatRaters+' ຄົນ ໃຫ້ຄະແນນທຸກຄົນເກືອບເທົ່າກັນ. ':'')+(st.outliers?st.outliers+' ຄະແນນ ຕ່າງຈາກຄົນອື່ນເກີນ 25 ຄະແນນ.':'')+(R.calibrate?' (ລະບົບປັບຄວາມລຳອຽງແລ້ວ)':'')+'</div>';
+  h+='<div class="card small muted">ສູດ: ສຸດທ້າຍ = ພະນັກງານ '+Math.round(R.weights.peer*100)+'% + ຜູ້ບໍລິຫານ '+Math.round(R.weights.exec*100)+'% · ສ່ວນພະນັກງານ = ເກນ '+Math.round((1-R.weights.rank)*100)+'% + ຈັດອັນດັບ '+Math.round(R.weights.rank*100)+'%'+(R.pool?' · ແບ່ງ Incentive ຕາມ ຄະແນນ<sup>'+R.power+'</sup>':'')+'</div>';
+  R.people.forEach(p=>{
+    const op=S.open[p.id];
+    h+='<div class="card person" onclick="S.open[\''+p.id+'\']=!S.open[\''+p.id+'\'];render()">'+
+     '<div class="top"><div class="medal'+(p.rank&&p.rank<=3?' m'+p.rank:'')+'">'+(p.rank||'–')+'</div>'+avatar(p)+'<div><b>'+esc(p.name)+'</b><br><span class="grade g-'+p.grade.tone+'">'+esc(p.grade.lo)+' · '+esc(p.grade.en)+'</span></div>'+
+     '<div class="final"><b>'+fmt(p.final)+'</b><div class="small muted">/100</div></div></div>'+
+     '<div style="margin-top:12px">'+
+       '<div class="mini"><span>ພະນັກງານ</span><div class="bar"><i style="width:'+(p.peer||0)+'%;background:#3b82c4"></i></div><b>'+fmt(p.peer)+'</b></div>'+
+       '<div class="mini"><span>ຜູ້ບໍລິຫານ</span><div class="bar"><i style="width:'+(p.exec||0)+'%;background:#8b5cf6"></i></div><b>'+fmt(p.exec)+'</b></div>'+
+       (R.pool?'<div class="mini"><span>Incentive</span><div class="bar"><i style="width:'+(p.share*100*2)+'%;background:var(--sun)"></i></div><b>'+Math.round(p.share*100)+'%</b></div><div class="small" style="text-align:right;font-weight:700">'+fmt(p.amount)+' '+esc(R.currency)+'</div>':'')+
+     '</div>';
+    if(op){
+      h+='<div class="detail" onclick="event.stopPropagation()">'+
+        '<div class="fb"><div>🌱 <b>ຈຸດແຂງ</b> <span class="en-sub">Strength</span>'+esc(p.strength||'–')+'<span class="en-sub">'+esc(p.strengthEn||'')+'</span></div>'+
+        '<div>🚀 <b>ຈຸດທີ່ສາມາດພັດທະນາຕໍ່</b> <span class="en-sub">Area to grow</span>'+esc(p.growth||'–')+'<span class="en-sub">'+esc(p.growthEn||'')+'</span></div></div>'+
+        '<div class="small muted" style="margin:8px 0 4px">ຄະແນນສະເລ່ຍແຕ່ລະເກນ (1–5)</div>'+
+        p.criteria.map(c=>'<div class="mini"><span>'+esc(c.name)+'</span><div class="bar"><i style="width:'+((c.avg||0)/5*100)+'%;background:var(--s'+Math.max(1,Math.round(c.avg||1))+')"></i></div><b>'+fmt(c.avg)+'</b></div>').join('')+
+        '<div class="small muted" style="margin-top:8px">ປະເມີນໂດຍ: ພະນັກງານ '+p.nPeer+' ຄົນ · ຜູ້ບໍລິຫານ '+p.nExec+' ຄົນ'+(p.rankPts!=null?' · ຄະແນນຈັດອັນດັບ '+fmt(p.rankPts):'')+'</div>'+
+        (p.comments&&p.comments.length?'<div class="small muted" style="margin-top:10px">ຄຳເຫັນ (ບໍ່ລະບຸຊື່)</div>'+p.comments.map(t=>'<div class="quote">“'+esc(t)+'”</div>').join(''):'')+
+      '</div>';
+    } else h+='<div class="small muted center" style="margin-top:6px">ແຕະເພື່ອເບິ່ງລາຍລະອຽດ</div>';
+    h+='</div>';
+  });
+  h+=(S.err?'<div class="err">'+esc(S.err)+'</div>':'')+(S.toast?'<div class="okbox">'+esc(S.toast)+'</div>':'')+'</div>';
+  h+='<div class="dock"><div class="in"><button class="btn ghost" onclick="refreshDash()">↻ ໂຫຼດໃໝ່</button><button class="btn" onclick="saveDash()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'💾 ບັນທຶກລົງ Sheet')+'</button></div></div>';
+  $app.innerHTML=h;
+}
+function demoResults(){ api('apiLoginAdmin','ADMIN1').then(r=>{S.token=r.token; return api('apiResults',S.token);}).then(res=>{S.res=res; S.tab='res'; go('dash');}); }
+
+/* ---- Admin: ຈັດການພະນັກງານ ---- */
+function tabsHtml(){
+  return '<div class="tabs" role="tablist">'+
+    '<button class="tab'+(S.tab==='res'?' on':'')+'" onclick="S.tab=\'res\';refreshDash()">📊 ຜົນການປະເມີນ</button>'+
+    '<button class="tab'+(S.tab==='emp'?' on':'')+'" onclick="openEmp()">👥 ຈັດການພະນັກງານ</button></div>';
+}
+function openEmp(){
+  S.tab='emp'; S.err=''; render();
+  api('apiEmployees',S.token).then(l=>{S.emps=l; render();}).catch(e=>{S.err=e.message||e; render();});
+}
+function syncInit(){ S.init.employees=(S.emps||[]).filter(e=>e.active).map(e=>({id:e.id,name:e.name,position:e.position})); }
+function empHtml(){
+  const A=S.add;
+  let h='<div class="card"><div class="row" style="flex-wrap:wrap;gap:12px"><div style="min-width:0"><h2>ພະນັກງານໃນການປະເມີນ</h2><span class="en-sub">Employees in this evaluation'+(S.emps?' · ໃຊ້ງານ '+S.emps.filter(e=>e.active).length+' ຄົນ':'')+'</span></div>'+
+    '<button class="btn sun" style="margin-left:auto" onclick="S.add.open=!S.add.open;S.add.msg=null;S.err=\'\';render();setTimeout(()=>{const x=document.getElementById(\'ne\');x&&x.focus()},50)">➕ ເພີ່ມພະນັກງານ</button></div>';
+  if(A.open){
+    h+='<div class="addbox fade"><div class="field"><label for="ne">ຊື່ ແລະ ນາມສະກຸນ</label><input id="ne" class="input" placeholder="ເຊັ່ນ: ທ່ານ ສົມສັກ ພົມມະວົງ" onkeydown="if(event.key===\'Enter\')addEmp()"></div>'+
+      '<div class="field"><label for="np">ຕຳແໜ່ງ (ບໍ່ບັງຄັບ)</label><input id="np" class="input" placeholder="ເຊັ່ນ: ວິສະວະກອນໄຟຟ້າ" onkeydown="if(event.key===\'Enter\')addEmp()"></div>'+
+      '<div class="small muted" style="margin-bottom:10px">ລະບົບຈະສ້າງ ID ແລະ PIN 4 ຕົວໃຫ້ອັດຕະໂນມັດ. ຖ້າເພີ່ມລະຫວ່າງຮອບ, ຄົນທີ່ສົ່ງການປະເມີນແລ້ວ ຕ້ອງເຂົ້າໄປປະເມີນໃໝ່ ເພື່ອໃຫ້ຄະແນນຄົນໃໝ່ນຳ.</div>'+
+      '<div class="row"><button class="btn ghost" onclick="S.add.open=false;render()">ຍົກເລີກ</button><button class="btn" style="flex:1" onclick="addEmp()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'ບັນທຶກ ແລະ ສ້າງ PIN')+'</button></div></div>';
+  }
+  if(A.msg){
+    h+='<div class="okbox fade">✅ ເພີ່ມ <b>'+esc(A.msg.name)+'</b> ແລ້ວ. ສົ່ງ PIN ນີ້ໃຫ້ລາວແບບສ່ວນຕົວ:'+
+      '<div class="row" style="margin-top:8px"><span class="pinbig" id="newpin">'+esc(A.msg.pin)+'</span><button class="btn ghost" onclick="copyTxt(\''+esc(A.msg.pin)+'\',this)">ສຳເນົາ</button></div></div>';
+  }
+  if(S.err) h+='<div class="err">'+esc(S.err)+'</div>';
+  h+='</div>';
+  if(!S.emps) return h+'<div class="card center muted">ກຳລັງໂຫຼດ…</div>';
+  S.emps.forEach(e=>{
+    h+='<div class="card emp'+(e.active?'':' off')+'"><div class="row" style="flex-wrap:wrap;gap:12px">'+avatar(e)+
+      '<div style="flex:1;min-width:140px"><b>'+esc(e.name)+'</b><span class="en-sub">'+esc(e.id)+(e.position?' · '+esc(e.position):'')+'</span></div>'+
+      '<span class="status '+(e.active?'s-on':'s-off')+'">'+(e.active?'ຢູ່ໃນການປະເມີນ':'ປິດແລ້ວ')+'</span></div>'+
+      '<div class="row" style="margin-top:12px;flex-wrap:wrap;gap:8px"><span class="small muted">PIN</span><span class="pinchip">'+esc(e.pin)+'</span>'+
+      '<span style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="btn ghost sm" onclick="copyTxt(\''+esc(e.pin)+'\',this)">ສຳເນົາ PIN</button>'+
+      '<button class="btn ghost sm" onclick="newPin(\''+e.id+'\')">PIN ໃໝ່</button>'+
+      '<button class="btn ghost sm" onclick="toggleEmp(\''+e.id+'\','+(!e.active)+')">'+(e.active?'ເອົາອອກຈາກການປະເມີນ':'ເອົາກັບເຂົ້າ')+'</button></span></div></div>';
+  });
+  return h;
+}
+function addEmp(){
+  const n=(document.getElementById('ne').value||'').trim(), p=(document.getElementById('np').value||'').trim();
+  if(n.length<2){ S.err='ກະລຸນາໃສ່ຊື່ພະນັກງານ'; render(); return; }
+  S.busy=true; S.err=''; render();
+  api('apiAddEmployee',S.token,n,p).then(e=>{ S.busy=false; S.add={open:false,msg:e}; S.emps.push(e); syncInit(); render(); })
+    .catch(x=>{ S.busy=false; S.err=x.message||x; render(); });
+}
+function toggleEmp(id,on){
+  api('apiSetActive',S.token,id,on).then(()=>{ S.emps.find(x=>x.id===id).active=on; syncInit(); render(); }).catch(x=>{S.err=x.message||x; render();});
+}
+function newPin(id){
+  api('apiResetPin',S.token,id).then(p=>{ S.emps.find(x=>x.id===id).pin=p; render(); }).catch(x=>{S.err=x.message||x; render();});
+}
+function copyTxt(t,btn){
+  const done=()=>{ const o=btn.textContent; btn.textContent='ສຳເນົາແລ້ວ ✓'; setTimeout(()=>btn.textContent=o,1400); };
+  try{ navigator.clipboard.writeText(t).then(done).catch(()=>done()); }catch(e){ done(); }
+}
+
+function refreshDash(){ api('apiResults',S.token,S.period||null).then(r=>{S.res=r;render();}).catch(e=>{S.err=e.message||e;render();}); }
+function saveDash(){ S.busy=true; render(); api('apiSaveResults',S.token,S.period||null).then(()=>{S.busy=false; S.err=''; render(); S.toast='ບັນທຶກລົງ Sheet "ຜົນລວມ" ແລ້ວ ✅'; render(); setTimeout(()=>{S.toast='';render();},2500);}).catch(e=>{S.busy=false;S.err=e.message||e;render();}); }
+
+/* ============ Demo data (only used outside Apps Script) ============ */
+const Demo = (function(){
+  const emps=[{id:'E01',name:'ພະນັກງານ ກ',position:'ວິສະວະກອນ'},{id:'E02',name:'ພະນັກງານ ຂ',position:'ບັນຊີ'},{id:'E03',name:'ພະນັກງານ ຄ',position:'ຊ່າງເຕັກນິກ'},{id:'E04',name:'ພະນັກງານ ງ',position:'ຈັດຊື້'},{id:'E05',name:'ພະນັກງານ ຈ',position:'ປະສານງານ'}].map(e=>Object.assign(e,{pin:'1111',active:true}));
+  const pub=e=>({id:e.id,name:e.name,position:e.position});
+  const rpin=()=>String(1000+Math.floor(Math.random()*9000));
+  let forceClosed=false;
+  const now=new Date(), pad=n=>('0'+n).slice(-2);
+  const PER='ເດືອນ '+pad(now.getMonth()+1)+'/'+now.getFullYear();
+  const pv=new Date(now.getFullYear(),now.getMonth()-1,1), PREV='ເດືອນ '+pad(pv.getMonth()+1)+'/'+pv.getFullYear();
+  function win(){
+    const y=now.getFullYear(), m=now.getMonth()+1, d=now.getDate(), F=25, T=29, dim=(yy,mm)=>new Date(yy,mm,0).getDate();
+    const f=(yy,mm,dd)=>pad(dd)+'/'+pad(mm)+'/'+yy, to=Math.min(T,dim(y,m));
+    const inW=d>=F&&d<=to && !forceClosed;
+    const w={auto:true,from:F,to:T,today:f(y,m,d),manualClosed:false,open:inW};
+    if(inW){ w.closesOn=f(y,m,to); w.daysLeft=to-d+1; }
+    else { let ny=y,nm=m; if(d>=F){nm++; if(nm>12){nm=1;ny++;}} w.opensOn=f(ny,nm,F); w.daysUntil=Math.round((Date.UTC(ny,nm-1,F)-Date.UTC(y,m-1,d))/864e5); }
+    return w;
+  }
+  const L=(a,b,c,d,e)=>[a,b,c,d,e];
+  const cri=[
+    {id:'C1',name:'ຜົນງານ ແລະ ຄຸນນະພາບຂອງວຽກ',en:'Work output & quality',weight:25,levels:L('ວຽກບໍ່ສຳເລັດ ຫຼື ຜິດພາດຫຼາຍ, ຕ້ອງໃຫ້ຄົນອື່ນແກ້ໃຫ້ເລື້ອຍໆ','ວຽກສຳເລັດບາງສ່ວນ, ມີຂໍ້ຜິດພາດທີ່ຕ້ອງກວດແກ້ເປັນປະຈຳ','ວຽກສຳເລັດຕາມທີ່ມອບໝາຍ, ຄຸນນະພາບຕາມມາດຕະຖານ','ວຽກດີກວ່າມາດຕະຖານ, ຜິດພາດໜ້ອຍ, ເຊື່ອຖືໄດ້','ຜົນງານໂດດເດັ່ນ ເກີນເປົ້າໝາຍຢ່າງຊັດເຈນ, ເປັນແບບຢ່າງໃຫ້ຄົນອື່ນ'),levelsEn:L('Often incomplete or error-prone; others must fix it','Partly done; regular errors need correcting','Completes assigned work to standard','Above standard, few errors, reliable','Clearly exceeds targets; a role model')},
+    {id:'C2',name:'ຄວາມຮັບຜິດຊອບ ແລະ ຄວາມຕັ້ງໃຈ',en:'Responsibility & commitment',weight:20,levels:L('ມັກຊັກຊ້າ, ຫຼົບຫຼີກວຽກ, ຕ້ອງຕິດຕາມຕະຫຼອດ','ສົ່ງວຽກຊ້າບາງຄັ້ງ, ຕ້ອງເຕືອນຈຶ່ງເຮັດ','ສົ່ງວຽກທັນເວລາເປັນສ່ວນໃຫຍ່, ຮັບຜິດຊອບວຽກຂອງຕົນ','ທັນເວລາສະເໝີ, ຕິດຕາມວຽກເອງໂດຍບໍ່ຕ້ອງເຕືອນ','ຮັບຜິດຊອບເກີນໜ້າທີ່, ອາສາຮັບວຽກຍາກ ແລະ ເຮັດໃຫ້ສຳເລັດ'),levelsEn:L('Often late, avoids tasks, needs constant follow-up','Sometimes late; needs reminders','Mostly on time; owns own tasks','Always on time; follows through without reminders','Goes beyond role; volunteers for hard tasks and delivers')},
+    {id:'C3',name:'ການແກ້ບັນຫາ ແລະ ຄວາມຄິດລິເລີ່ມ',en:'Problem-solving & initiative',weight:15,levels:L('ເມື່ອມີບັນຫາ ລໍຖ້າຄົນອື່ນແກ້ໃຫ້','ແກ້ບັນຫາງ່າຍໆໄດ້, ບັນຫາອື່ນຕ້ອງຖາມຕະຫຼອດ','ແກ້ບັນຫາທົ່ວໄປໃນວຽກຂອງຕົນໄດ້ເອງ','ແກ້ບັນຫາຍາກໄດ້ ແລະ ສະເໜີວິທີປັບປຸງວຽກ','ລິເລີ່ມສິ່ງໃໝ່ທີ່ເກີດຜົນຈິງ (ປະຢັດເວລາ / ຕົ້ນທຶນ)'),levelsEn:L('Waits for others to solve problems','Handles only simple issues alone','Solves routine problems independently','Solves harder problems and proposes improvements','Initiates changes with real impact (time / cost saved)')},
+    {id:'C4',name:'ການເຮັດວຽກເປັນທີມ ແລະ ການຮ່ວມມື',en:'Teamwork & collaboration',weight:10,levels:L('ບໍ່ຮ່ວມມື, ສ້າງຄວາມຂັດແຍ່ງໃນທີມ','ຮ່ວມມືສະເພາະເມື່ອຖືກຂໍ, ບໍ່ຄ່ອຍແບ່ງປັນ','ຮ່ວມມືດີ, ເຮັດສ່ວນຂອງຕົນໃນທີມ','ຊ່ວຍເພື່ອນຮ່ວມງານເປັນປະຈຳ, ແບ່ງປັນຂໍ້ມູນ','ເປັນຫຼັກທີ່ເຮັດໃຫ້ທີມເຂັ້ມແຂງ, ທຸກຄົນຢາກເຮັດວຽກນຳ'),levelsEn:L('Uncooperative; causes friction','Cooperates only when asked','Cooperates well; does own part','Regularly helps colleagues; shares knowledge','Anchor of the team; everyone wants to work with them')},
+    {id:'C5',name:'ການເສຍສະຫຼະເພື່ອສ່ວນລວມ',en:'Sacrifice for the common good',weight:10,levels:L('ຄິດແຕ່ຜົນປະໂຫຍດຂອງຕົນເອງ','ຊ່ວຍສ່ວນລວມໜ້ອຍ, ສະເພາະເມື່ອບໍ່ກະທົບຕົນເອງ','ຊ່ວຍວຽກສ່ວນລວມເມື່ອຖືກຂໍ','ອາສາຊ່ວຍວຽກສ່ວນລວມ ເຖິງນອກເວລາ','ເສຍສະຫຼະເວລາ ແລະ ແຮງງານເພື່ອອົງກອນ ຢ່າງຕໍ່ເນື່ອງ ແລະ ເຫັນໄດ້ຊັດ'),levelsEn:L('Focuses only on self-interest','Helps only when convenient','Helps with shared work when asked','Volunteers for shared work, even off-hours','Consistently and visibly sacrifices for the organisation')},
+    {id:'C6',name:'ການສື່ສານ',en:'Communication',weight:10,levels:L('ສື່ສານບໍ່ຈະແຈ້ງ, ຂໍ້ມູນຕົກຫຼົ່ນເລື້ອຍໆ','ສື່ສານໄດ້ ແຕ່ມັກເຂົ້າໃຈຜິດ ຫຼື ລາຍງານຊ້າ','ສື່ສານຈະແຈ້ງ, ລາຍງານຕາມກຳນົດ','ລາຍງານລ່ວງໜ້າ, ຮັບຟັງ ແລະ ຕອບສະໜອງໄວ','ສື່ສານດີເລີດກັບທຸກຝ່າຍ ລວມທັງລູກຄ້າ ແລະ ຄູ່ຮ່ວມງານພາຍນອກ'),levelsEn:L('Unclear; information often lost','Often misunderstood or reports late','Clear; reports on schedule','Proactive updates; listens and responds fast','Excellent with all parties incl. clients and partners')},
+    {id:'C7',name:'ວິໄນ ແລະ ການປະຕິບັດຕາມກົດລະບຽບ',en:'Discipline & compliance',weight:10,levels:L('ລະເມີດກົດລະບຽບເລື້ອຍໆ (ມາຊ້າ, ຂາດວຽກ, ຄວາມປອດໄພ)','ລະເມີດບາງຄັ້ງ','ປະຕິບັດຕາມກົດລະບຽບ','ເຄັ່ງຄັດ, ບໍ່ເຄີຍລະເມີດ, ເອົາໃຈໃສ່ຄວາມປອດໄພ','ເປັນແບບຢ່າງ ແລະ ຊຸກຍູ້ຄົນອື່ນໃຫ້ປະຕິບັດຕາມ'),levelsEn:L('Frequent violations (lateness, absence, safety)','Occasional violations','Follows the rules','Strict, no violations, safety-minded','Role model; helps others comply')}
+  ];
+  function crit(a){ return cri.map((c,i)=>({id:c.id,name:c.name,en:c.en,peer:a[i],exec:a[i],avg:a[i]})); }
+  const g=(lo,en,tone)=>({lo,en,tone});
+  return {
+    toggleClosed:()=>{ forceClosed=!forceClosed; S.init=Demo.apiInit(); render(); },
+    apiInit:()=>({org:'ບໍລິສັດ ຕົວຢ່າງ',period:PER,open:win().open,win:win(),employees:emps.filter(e=>e.active).map(pub),criteria:cri,peerW:0.6,execW:0.4,rankW:0.3,requireReason:true}),
+    apiLoginEmployee:(id,pin)=>{ if(!win().open) throw new Error('ລະບົບເປີດໃຫ້ປະເມີນສະເພາະວັນທີ 25–29 ຂອງທຸກເດືອນ'); const m=emps.find(e=>e.id===id); if(!m||String(pin).trim()!==m.pin) throw new Error('PIN ບໍ່ຖືກຕ້ອງ'); return {token:'demo',me:{id:m.id,name:m.name},done:false}; },
+    apiLoginExec:(n,c)=>{ if(!win().open) throw new Error('ລະບົບເປີດໃຫ້ປະເມີນສະເພາະວັນທີ 25–29 ຂອງທຸກເດືອນ'); if(String(c).trim()!=='EXEC01') throw new Error('ລະຫັດຜູ້ບໍລິຫານບໍ່ຖືກຕ້ອງ'); return {token:'demo',me:{id:'EXEC:'+(n||'ຜູ້ບໍລິຫານ'),name:n||'ຜູ້ບໍລິຫານ'},done:false}; },
+    apiLoginAdmin:(c)=>{ if(String(c).trim()!=='ADMIN1') throw new Error('ລະຫັດ Admin ບໍ່ຖືກຕ້ອງ'); return {token:'demo'}; },
+    apiSubmit:()=>({ok:true}),
+    apiSaveResults:()=>({ok:true}),
+    apiEmployees:()=>emps.map(e=>Object.assign({},e)),
+    apiAddEmployee:(t,n,p)=>{ n=String(n||'').trim(); if(n.length<2) throw new Error('ກະລຸນາໃສ່ຊື່ພະນັກງານ'); if(emps.some(e=>e.name===n)) throw new Error('ມີຊື່ນີ້ໃນລາຍຊື່ແລ້ວ');
+      const e={id:'E'+('0'+(emps.length+1)).slice(-2),name:n,position:String(p||'').trim(),pin:rpin(),active:true}; emps.push(e); return Object.assign({},e); },
+    apiSetActive:(t,id,on)=>{ emps.find(e=>e.id===id).active=!!on; return {ok:true}; },
+    apiResetPin:(t,id)=>{ const e=emps.find(x=>x.id===id); e.pin=rpin(); return e.pin; },
+    apiResults:(t,per)=>liveRes(per,{org:'ບໍລິສັດ ຕົວຢ່າງ',period:PER,pool:10000000,currency:'ກີບ',power:2,weights:{peer:0.6,exec:0.4,rank:0.3},calibrate:true,
+      criteria:cri,stats:{max:86.4,min:51.2,avg:68.9,spread:35.2,peerSubmitted:5,peerExpected:5,execCount:1,flatRaters:1,outliers:1},
+      people:[
+        {id:'E03',name:'ພະນັກງານ ຄ',rank:1,final:86.4,peer:84.1,exec:89.8,rankPts:91.7,nPeer:4,nExec:1,share:0.299,amount:2990000,grade:g('ໂດດເດັ່ນ','Outstanding','a'),strength:'ຜົນງານ ແລະ ຄຸນນະພາບຂອງວຽກ',strengthEn:'Work output & quality',growth:'ການສື່ສານ',growthEn:'Communication',criteria:crit([4.8,4.6,4.4,4.2,4.5,3.8,4.3]),comments:['ແກ້ບັນຫາ inverter ຢູ່ໜ້າວຽກໄດ້ເອງ ປະຢັດເວລາ 2 ມື້','ອາສາເຮັດວຽກວັນເສົາ ເພື່ອໃຫ້ໂຄງການທັນກຳນົດ']},
+        {id:'E01',name:'ພະນັກງານ ກ',rank:2,final:74.3,peer:72.0,exec:77.8,rankPts:66.7,nPeer:4,nExec:1,share:0.221,amount:2210000,grade:g('ດີ','Good','c'),strength:'ຄວາມຮັບຜິດຊອບ ແລະ ຄວາມຕັ້ງໃຈ',strengthEn:'Responsibility & commitment',growth:'ການແກ້ບັນຫາ ແລະ ຄວາມຄິດລິເລີ່ມ',growthEn:'Problem-solving & initiative',criteria:crit([4.0,4.4,3.4,4.0,3.8,3.9,4.1]),comments:['ສົ່ງລາຍງານທັນເວລາສະເໝີ']},
+        {id:'E02',name:'ພະນັກງານ ຂ',rank:3,final:69.1,peer:70.2,exec:67.5,rankPts:58.3,nPeer:4,nExec:1,share:0.191,amount:1910000,grade:g('ດີ','Good','c'),strength:'ວິໄນ ແລະ ການປະຕິບັດຕາມກົດລະບຽບ',strengthEn:'Discipline & compliance',growth:'ການເສຍສະຫຼະເພື່ອສ່ວນລວມ',growthEn:'Sacrifice for the common good',criteria:crit([3.8,3.9,3.5,3.7,3.2,3.8,4.4]),comments:[]},
+        {id:'E05',name:'ພະນັກງານ ຈ',rank:4,final:63.6,peer:61.4,exec:66.9,rankPts:33.3,nPeer:4,nExec:1,share:0.162,amount:1620000,grade:g('ກຳລັງພັດທະນາ','Developing','d'),strength:'ການເຮັດວຽກເປັນທີມ ແລະ ການຮ່ວມມື',strengthEn:'Teamwork & collaboration',growth:'ຜົນງານ ແລະ ຄຸນນະພາບຂອງວຽກ',growthEn:'Work output & quality',criteria:crit([3.2,3.5,3.3,4.1,3.7,3.6,3.6]),comments:['ເປັນກັນເອງ ຊ່ວຍເພື່ອນສະເໝີ']},
+        {id:'E04',name:'ພະນັກງານ ງ',rank:5,final:51.2,peer:49.8,exec:53.3,rankPts:8.3,nPeer:4,nExec:1,share:0.127,amount:1270000,grade:g('ມີໂອກາດເຕີບໂຕອີກຫຼາຍ','Room to grow','e'),strength:'ການສື່ສານ',strengthEn:'Communication',growth:'ຄວາມຮັບຜິດຊອບ ແລະ ຄວາມຕັ້ງໃຈ',growthEn:'Responsibility & commitment',criteria:crit([3.0,2.7,3.0,3.3,3.0,3.6,3.1]),comments:['ຖ້າຕິດຕາມໃບສັ່ງຊື້ໄວຂຶ້ນ ຈະຊ່ວຍທີມໄດ້ຫຼາຍ']}
+      ]})
+  };
+  function liveRes(per,R){
+    R.periods=[PER,PREV]; R.win=win();
+    if(per===PREV){ R.period=PREV; const tw=[-6,4,-1,3,2]; R.people.forEach((p,i)=>{ p.final=Math.round((p.final+tw[i])*10)/10; }); R.stats.avg=66.2; R.stats.spread=34.6; R.stats.flatRaters=2; R.stats.outliers=0; }
+    const act=emps.filter(e=>e.active), ids=act.map(e=>e.id);
+    let ppl=R.people.filter(p=>ids.indexOf(p.id)>=0);
+    act.forEach(e=>{ if(!ppl.some(p=>p.id===e.id)) ppl.push({id:e.id,name:e.name,rank:null,final:null,peer:null,exec:null,rankPts:null,nPeer:0,nExec:0,share:0,amount:0,grade:g('ລໍຖ້າຂໍ້ມູນ','Pending','none'),strength:null,growth:null,criteria:crit([null,null,null,null,null,null,null]),comments:[]}); });
+    const tot=ppl.reduce((a,p)=>a+(p.final!=null?p.final*p.final:0),0);
+    ppl.forEach(p=>{ p.share=p.final!=null?p.final*p.final/tot:0; p.amount=Math.round(R.pool*p.share); });
+    ppl.sort((a,b)=>(b.final==null?-1:b.final)-(a.final==null?-1:a.final)); ppl.forEach((p,i)=>p.rank=p.final==null?null:i+1);
+    R.people=ppl; R.stats.peerExpected=act.length; return R;
+  }
+})();
+</script>
+</body>
+</html>
