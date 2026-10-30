@@ -161,11 +161,32 @@ h2{font-size:19px;margin:0 0 4px} h3{font-size:16px;margin:0}
 .center{text-align:center}
 .fade{animation:fd .25s ease}
 @keyframes fd{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ===== ພິມ / PDF ===== */
+#printArea{display:none}
+.pp{font-family:'Noto Sans Lao',system-ui,sans-serif;color:#111;font-size:12.5px;line-height:1.5}
+.pp .ph{display:flex;align-items:center;gap:14px;border-bottom:3px solid #0b6b4a;padding-bottom:8px;margin-bottom:12px}
+.pp .ph img{height:46px}.pp .ph .t{flex:1}.pp .ph .t b{font-size:16px;color:#0b6b4a;display:block}.pp .ph .t span{color:#555;font-size:12px}
+.pp h1{font-size:18px;margin:0 0 2px}.pp h2{font-size:14px;margin:14px 0 6px;color:#0b6b4a}
+.pp table{width:100%;border-collapse:collapse;margin-top:6px}.pp th,.pp td{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top}
+.pp th{background:#e6f2ec;font-weight:700}.pp td.n,.pp th.n{text-align:right;white-space:nowrap}
+.pp .kv{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}.pp .kv div{border:1px solid #bbb;border-radius:6px;padding:6px 12px;min-width:110px}.pp .kv b{display:block;font-size:17px}
+.pp .q{border-left:3px solid #0b6b4a;background:#f4f8f6;padding:5px 9px;margin:5px 0}
+.pp .note{color:#555;font-size:11px;margin-top:8px}.pp .sign{display:flex;justify-content:space-between;margin-top:46px;font-size:12px}.pp .sign div{width:44%;text-align:center;border-top:1px solid #333;padding-top:4px}
+.printbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+@media print{
+  html,body{background:#fff!important}
+  body.printing #app,body.printing .dock,body.printing #demoBar,body.printing>a{display:none!important}
+  body.printing #printArea{display:block}
+  @page{size:A4;margin:14mm}
+  .pp{page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}.pp:last-child{page-break-after:auto}
+}
 </style>
 </head>
 <body>
 <a href="./" style="position:fixed;top:max(8px,env(safe-area-inset-top));left:8px;z-index:50;background:#ffffffee;border:1px solid #0b6b4a55;color:#0b6b4a;border-radius:20px;padding:6px 12px;font:600 13px system-ui;text-decoration:none">‹ ໜ້າຫຼັກ</a>
 <div id="app"></div>
+<div id="printArea"></div>
 
 <script>
 /* ============ API bridge (Apps Script / Demo) ============ */
@@ -422,6 +443,10 @@ function vDash(){
     '<div class="stat"><span class="small muted">ຫ່າງກັນ (ສູງ–ຕ່ຳ)</span><b>'+fmt(st.spread)+'</b></div></div>';
   if(st.flatRaters||st.outliers) h+='<div class="warnbox">🔎 ຄຸນນະພາບຂໍ້ມູນ: '+(st.flatRaters?st.flatRaters+' ຄົນ ໃຫ້ຄະແນນທຸກຄົນເກືອບເທົ່າກັນ. ':'')+(st.outliers?st.outliers+' ຄະແນນ ຕ່າງຈາກຄົນອື່ນເກີນ 25 ຄະແນນ.':'')+(R.calibrate?' (ລະບົບປັບຄວາມລຳອຽງແລ້ວ)':'')+'</div>';
   h+='<div class="card small muted">ສູດ: ສຸດທ້າຍ = ພະນັກງານ '+Math.round(R.weights.peer*100)+'% + ຜູ້ບໍລິຫານ '+Math.round(R.weights.exec*100)+'% · ສ່ວນພະນັກງານ = ເກນ '+Math.round((1-R.weights.rank)*100)+'% + ຈັດອັນດັບ '+Math.round(R.weights.rank*100)+'%'+(R.pool?' · ແບ່ງ Incentive ຕາມ ຄະແນນ<sup>'+R.power+'</sup>':'')+'</div>';
+  h+='<div class="card"><div class="small muted" style="margin-bottom:8px">🖨 ພິມ / ບັນທຶກເປັນ PDF (ໃນໜ້າຕ່າງພິມ ເລືອກ "Save as PDF")</div><div class="printbar">'+
+    '<button class="btn" onclick="printSummary()">📄 ສະຫຼຸບລວມ + ຈັດອັນດັບ</button>'+
+    '<button class="btn ghost" onclick="printAllPeople()">📑 ລາຍລະອຽດທຸກຄົນ (ມີຄຳເຫັນ)</button>'+
+    '<label class="small muted" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="pAmt"> ໃສ່ຈຳນວນ Incentive</label></div></div>';
   R.people.forEach(p=>{
     const op=S.open[p.id];
     h+='<div class="card person" onclick="S.open[\''+p.id+'\']=!S.open[\''+p.id+'\'];render()">'+
@@ -433,7 +458,7 @@ function vDash(){
        (R.pool?'<div class="mini"><span>Incentive</span><div class="bar"><i style="width:'+(p.share*100*2)+'%;background:var(--sun)"></i></div><b>'+Math.round(p.share*100)+'%</b></div><div class="small" style="text-align:right;font-weight:700">'+fmt(p.amount)+' '+esc(R.currency)+'</div>':'')+
      '</div>';
     if(op){
-      h+='<div class="detail" onclick="event.stopPropagation()">'+
+      h+='<div class="detail" onclick="event.stopPropagation()"><div style="text-align:right"><button class="btn ghost sm" onclick="printPerson(\''+p.id+'\')">🖨 ພິມລາຍລະອຽດຄົນນີ້</button></div>'+
         '<div class="fb"><div>🌱 <b>ຈຸດແຂງ</b> <span class="en-sub">Strength</span>'+esc(p.strength||'–')+'<span class="en-sub">'+esc(p.strengthEn||'')+'</span></div>'+
         '<div>🚀 <b>ຈຸດທີ່ສາມາດພັດທະນາຕໍ່</b> <span class="en-sub">Area to grow</span>'+esc(p.growth||'–')+'<span class="en-sub">'+esc(p.growthEn||'')+'</span></div></div>'+
         '<div class="small muted" style="margin:8px 0 4px">ຄະແນນສະເລ່ຍແຕ່ລະເກນ (1–5)</div>'+
@@ -448,6 +473,43 @@ function vDash(){
   h+='<div class="dock"><div class="in"><button class="btn ghost" onclick="refreshDash()">↻ ໂຫຼດໃໝ່</button><button class="btn" onclick="saveDash()" '+(S.busy?'disabled':'')+'>'+(S.busy?'<span class="spin"></span>':'💾 ບັນທຶກລົງ Sheet')+'</button></div></div>';
   $app.innerHTML=h;
 }
+
+/* ============ ພິມ / ບັນທຶກເປັນ PDF ============ */
+function ppHead(R, title){
+  return '<div class="ph"><img src="logo.png" alt=""><div class="t"><b>'+esc(R.org||'')+'</b><span>'+esc(title)+' · ຮອບ '+esc(R.period)+'</span></div><span style="font-size:11px;color:#555">ພິມວັນທີ '+new Date().toLocaleDateString('en-GB')+'</span></div>';
+}
+function doPrint(html){
+  const a=document.getElementById('printArea'); a.innerHTML=html;
+  document.body.classList.add('printing');
+  const done=()=>{ document.body.classList.remove('printing'); window.removeEventListener('afterprint',done); };
+  window.addEventListener('afterprint',done);
+  setTimeout(()=>window.print(),350);
+}
+function summaryHtml(R, withAmt){
+  const st=R.stats, rows=R.people.map(p=>'<tr><td class="n">'+(p.rank||'–')+'</td><td><b>'+esc(p.name)+'</b></td><td>'+esc(p.position||'')+'</td>'+
+    '<td class="n">'+fmt(p.peer)+'</td><td class="n">'+fmt(p.exec)+'</td><td class="n"><b>'+fmt(p.final)+'</b></td><td>'+esc(p.grade.lo)+'</td>'+
+    (withAmt?'<td class="n">'+fmt(p.amount)+' '+esc(R.currency||'')+'</td>':'')+'</tr>').join('');
+  return '<div class="pp">'+ppHead(R,'ສະຫຼຸບຜົນການປະເມີນພະນັກງານ')+
+    '<h1>ສະຫຼຸບຜົນການປະເມີນ ແລະ ຈັດອັນດັບ</h1>'+
+    '<div class="kv"><div>ຄະແນນສະເລ່ຍ<b>'+fmt(st.avg)+'</b></div><div>ສູງສຸດ<b>'+fmt(st.max)+'</b></div><div>ຕ່ຳສຸດ<b>'+fmt(st.min)+'</b></div><div>ພະນັກງານສົ່ງແລ້ວ<b>'+st.peerSubmitted+' / '+st.peerExpected+'</b></div><div>ຜູ້ບໍລິຫານສົ່ງແລ້ວ<b>'+st.execCount+'</b></div></div>'+
+    '<table><tr><th class="n">ອັນດັບ</th><th>ຊື່</th><th>ຕຳແໜ່ງ</th><th class="n">ພະນັກງານ</th><th class="n">ຜູ້ບໍລິຫານ</th><th class="n">ຄະແນນລວມ</th><th>ລະດັບ</th>'+(withAmt?'<th class="n">Incentive</th>':'')+'</tr>'+rows+'</table>'+
+    '<div class="note">ສູດ: ຄະແນນລວມ = ພະນັກງານ '+Math.round(R.weights.peer*100)+'% + ຜູ້ບໍລິຫານ '+Math.round(R.weights.exec*100)+'% · ຄະແນນເຕັມ 100 · ເອກະສານລັບ ໃຊ້ພາຍໃນບໍລິສັດ</div>'+
+    '<div class="sign"><div>ຜູ້ກວດສອບ</div><div>ຜູ້ອະນຸມັດ</div></div></div>';
+}
+function personHtml(R, p){
+  const n=R.people.filter(x=>x.final!=null).length;
+  const crit=p.criteria.map(c=>'<tr><td>'+esc(c.name)+'<br><span style="color:#666;font-size:11px">'+esc(c.en||'')+'</span></td><td class="n">'+fmt(c.peer)+'</td><td class="n">'+fmt(c.exec)+'</td><td class="n"><b>'+fmt(c.avg)+'</b></td></tr>').join('');
+  return '<div class="pp">'+ppHead(R,'ຜົນການປະເມີນລາຍບຸກຄົນ')+
+    '<h1>'+esc(p.name)+'</h1><div style="color:#555">'+esc(p.position||'')+'</div>'+
+    '<div class="kv"><div>ອັນດັບ<b>'+(p.rank?p.rank+' / '+n:'–')+'</b></div><div>ຄະແນນລວມ<b>'+fmt(p.final)+' / 100</b></div><div>ພະນັກງານ<b>'+fmt(p.peer)+'</b></div><div>ຜູ້ບໍລິຫານ<b>'+fmt(p.exec)+'</b></div><div>ລະດັບ<b style="font-size:14px">'+esc(p.grade.lo)+'</b></div></div>'+
+    '<h2>ຄະແນນແຕ່ລະເກນ (1–5)</h2><table><tr><th>ເກນປະເມີນ</th><th class="n">ພະນັກງານ</th><th class="n">ຜູ້ບໍລິຫານ</th><th class="n">ສະເລ່ຍ</th></tr>'+crit+'</table>'+
+    '<h2>ຈຸດແຂງ / ຈຸດພັດທະນາ</h2><div>🌱 ຈຸດແຂງ: <b>'+esc(p.strength||'–')+'</b></div><div>🚀 ຈຸດທີ່ສາມາດພັດທະນາຕໍ່: <b>'+esc(p.growth||'–')+'</b></div>'+
+    '<h2>ຄຳເຫັນ (ບໍ່ລະບຸຊື່ຜູ້ປະເມີນ)</h2>'+(p.comments&&p.comments.length?p.comments.map(t=>'<div class="q">“'+esc(t)+'”</div>').join(''):'<div style="color:#777">ບໍ່ມີຄຳເຫັນ</div>')+
+    '<div class="note">ປະເມີນໂດຍ: ພະນັກງານ '+p.nPeer+' ຄົນ · ຜູ້ບໍລິຫານ '+p.nExec+' ຄົນ · ເອກະສານລັບສະເພາະບຸກຄົນ</div></div>';
+}
+function printSummary(){ const w=document.getElementById('pAmt'); doPrint(summaryHtml(S.res, !!(w&&w.checked))); }
+function printAllPeople(){ doPrint(S.res.people.map(p=>personHtml(S.res,p)).join('')); }
+function printPerson(id){ const p=S.res.people.find(x=>x.id===id); if(p) doPrint(personHtml(S.res,p)); }
 function demoResults(){ api('apiLoginAdmin','ADMIN1').then(r=>{S.token=r.token; return api('apiResults',S.token);}).then(res=>{S.res=res; S.tab='res'; go('dash');}); }
 
 /* ---- Admin: ຈັດການພະນັກງານ ---- */
