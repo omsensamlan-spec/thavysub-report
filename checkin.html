@@ -39,9 +39,39 @@ h3{margin:2px 0 8px;font-size:16px;color:#0b6b4a}.hint{font-size:12px;color:#778
 .li{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #edf1ef;font-size:14px}
 .mini{all:unset;color:#b3261e;font-weight:700;font-size:13px;cursor:pointer}
 .bar{height:10px;border-radius:6px;background:#e4ece8;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:#0b6b4a}
+
+.rpwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.rp{font-family:'Noto Sans Lao',system-ui,sans-serif;color:#111;font-size:12px;min-width:980px}
+.rp .ph{display:flex;align-items:center;gap:14px;border-bottom:3px solid #0b6b4a;padding-bottom:8px;margin-bottom:8px}
+.rp .ph img{height:42px}.rp .ph .t{flex:1}.rp .ph .t b{color:#0b6b4a;font-size:15px;display:block}.rp .ph .t span{color:#555}
+.rp h1{font-size:16px;margin:4px 0}
+.rp .legend{display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 8px;align-items:center;font-size:11px}
+.rp .lg{display:inline-flex;gap:5px;align-items:center}.rp .lg i{width:13px;height:13px;border-radius:3px;display:inline-block;border:1px solid #0002}
+.rp table{border-collapse:collapse;width:100%;table-layout:fixed}
+.rp th,.rp td{border:1px solid #c9d3ce;padding:0;text-align:center}
+.rp th{background:#e6f2ec;font-size:10px;height:22px;line-height:1.2}.rp th.we{background:#eceff1;color:#889}
+.rp td.nm{text-align:left;padding:3px 6px;font-weight:600;font-size:11px;width:150px;line-height:1.25}
+.rp td.nm small{display:block;font-weight:400;color:#667;font-size:9.5px}
+.rp td.dy{height:34px;vertical-align:top}
+.rp .c{height:50%;min-height:16px;font-size:7px;line-height:17px;color:#0b2f1f;font-weight:600;overflow:hidden;white-space:nowrap}
+.rp .c+.c{border-top:1px solid #fff}
+.rp .g{background:#7fd69a}.rp .y{background:#ffd966}.rp .r{background:#f28b82;color:#fff}.rp .w{background:#eceff1}.rp .l{background:#9ec5fe;color:#0a3a7a}.rp .f{background:#fff}
+.rp th.sm,.rp td.sm{width:44px;font-size:10px;font-weight:700}
+.rp td.sm{background:#fafcfb}.rp .sm .a{color:#0b6b4a}.rp .sm .b{color:#b58900}.rp .sm .d{color:#c0392b}
+.rp .note{color:#555;font-size:10.5px;margin-top:8px}
+#printArea{display:none}
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  html,body{background:#fff!important}
+  body.printing header,body.printing main{display:none!important}
+  body.printing #printArea{display:block}
+  body.printing .rp{min-width:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style></head><body>
 <header><a class="back" href="./">‹</a><img src="logo.png" alt=""><b>Check-in / Check-out</b></header>
 <main id="app"></main>
+<div id="printArea"></div>
 <script>
 const Q=new URLSearchParams(location.search),DEMO=Q.has('demo');
 const $=document.getElementById('app'),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -116,10 +146,64 @@ function admin(){
     return;
   }
   const A=S.admin;
-  $.innerHTML='<div class="tabs"><button class="'+(S.tab==='emp'?'on':'')+'" onclick="S.tab=\'emp\';render()">👥 ພະນັກງານ ('+A.employees.length+')</button><button class="'+(S.tab==='loc'?'on':'')+'" onclick="S.tab=\'loc\';render()">📍 ຈຸດເຮັດວຽກ ('+A.locations.length+')</button></div>'
-  +(S.tab==='emp'?'<div class="card"><h3>ເພີ່ມພະນັກງານ</h3><input id="ne" type="email" placeholder="Gmail" style="margin-bottom:8px"><input id="nn" placeholder="ຊື່-ນາມສະກຸນ"><div class="row"><button class="in" onclick="adm({action:\'admin_add_employee\',email:ne.value,name:nn.value})">+ ເພີ່ມ</button></div><p class="hint" id="amsg"></p></div><div class="card"><h3>ລາຍຊື່</h3>'+A.employees.map(e=>'<div class="li"><span>'+esc(e.name)+'<br><span class="hint">'+esc(e.email)+'</span></span><button class="mini" onclick="adm({action:\'admin_delete_employee\',email:\''+esc(e.email)+'\'})">ລຶບ</button></div>').join('')+'</div>'
+  $.innerHTML='<div class="tabs"><button class="'+(S.tab==='emp'?'on':'')+'" onclick="S.tab=\'emp\';render()">👥 ພະນັກງານ ('+A.employees.length+')</button><button class="'+(S.tab==='loc'?'on':'')+'" onclick="S.tab=\'loc\';render()">📍 ຈຸດເຮັດວຽກ ('+A.locations.length+')</button><button class="'+(S.tab==='att'?'on':'')+'" onclick="S.tab=\'att\';loadAtt()">📊 ລາຍງານ</button></div>'
+  +(S.tab==='att'?attTab():S.tab==='emp'?'<div class="card"><h3>ເພີ່ມພະນັກງານ</h3><input id="ne" type="email" placeholder="Gmail" style="margin-bottom:8px"><input id="nn" placeholder="ຊື່-ນາມສະກຸນ"><div class="row"><button class="in" onclick="adm({action:\'admin_add_employee\',email:ne.value,name:nn.value})">+ ເພີ່ມ</button></div><p class="hint" id="amsg"></p></div><div class="card"><h3>ລາຍຊື່</h3>'+A.employees.map(e=>'<div class="li"><span>'+esc(e.name)+'<br><span class="hint">'+esc(e.email)+'</span></span><button class="mini" onclick="adm({action:\'admin_delete_employee\',email:\''+esc(e.email)+'\'})">ລຶບ</button></div>').join('')+'</div>'
   :'<div class="card"><h3>ເພີ່ມຈຸດເຮັດວຽກ</h3><input id="ln" placeholder="ຊື່ຈຸດ" style="margin-bottom:8px"><div class="row" style="margin:0 0 8px"><input id="la" placeholder="Lat" inputmode="decimal"><input id="lo" placeholder="Lng" inputmode="decimal"></div><input id="lr" placeholder="ລັດສະໝີ (ແມັດ) ເຊັ່ນ 100" inputmode="numeric"><div class="row"><button class="alt" onclick="useHere()">📍 ໃຊ້ຕຳແໜ່ງປັດຈຸບັນ</button><button class="in" onclick="adm({action:\'admin_add_location\',locName:ln.value,lat:la.value,lng:lo.value,radius:lr.value})">+ ເພີ່ມ</button></div><p class="hint" id="amsg"></p></div><div class="card"><h3>ລາຍການຈຸດ</h3>'+A.locations.map(l=>'<div class="li"><span>'+esc(l.name)+'<br><span class="hint">ລັດສະໝີ '+l.radius+' ມ.</span></span><button class="mini" onclick="adm({action:\'admin_delete_location\',locName:\''+esc(l.name)+'\'})">ລຶບ</button></div>').join('')+'</div>')
   +'<button class="alt" style="width:100%" onclick="S.admin=null;go(\'main\')">ອອກຈາກ Admin</button>';
+}
+
+/* ---------- ລາຍງານສະຫຼຸບ Check-in/out ---------- */
+S.month=S.month||(new Date().toISOString().slice(0,7));S.att=null;S.attT=true;
+function loadAtt(){
+  S.att=null;render();
+  post({action:'admin_attendance',adminCode:S.adminCode,month:S.month}).then(r=>{if(r.ok){S.att=r}else S.attErr=r.msg;render()}).catch(e=>{S.attErr=e.message;render()});
+}
+function tmin(t){const a=String(t).split(':');return +a[0]*60+ +a[1]}
+function attHtml(R,showT){
+  const pad=n=>String(n).padStart(2,'0'),dn=['ອາ','ຈ','ອ','ພ','ພຫ','ສຸ','ສ'],N=R.daysInMonth;
+  const wdOf=d=>(R.firstDow+d-1)%7,isWork=d=>R.workDays.indexOf(wdOf(d))>=0;
+  let h='<div class="ph"><img src="logo.png" alt=""><div class="t"><b>ບໍລິສັດ ທະວີຊັບ ວິສະວະກຳພະລັງງານ ແລະ ທີ່ປຶກສາ ຈຳກັດ</b><span>ລາຍງານການເຂົ້າ-ອອກວຽກ ເດືອນ '+R.month+' · ພິມວັນທີ '+new Date().toLocaleDateString('en-GB')+'</span></div></div>';
+  h+='<h1>ສະຫຼຸບການ Check-in / Check-out ຕາມພະນັກງານ</h1><div class="legend"><span class="lg"><i class="g"></i>ທັນເວລາ (IN ≤ '+R.workStart+' · OUT ≥ '+R.workEnd+')</span><span class="lg"><i class="y"></i>ບໍ່ທັນ (ມາຊ້າ / ອອກກ່ອນ)</span><span class="lg"><i class="r"></i>ບໍ່ໄດ້ check</span><span class="lg"><i class="l"></i>ລາພັກ (ຈາກລະບົບ)</span><span class="lg"><i class="w"></i>ມື້ບໍ່ເຮັດວຽກ</span><span class="lg">ແຖວເທິງ = <b>IN</b> · ແຖວລຸ່ມ = <b>OUT</b></span></div>';
+  h+='<table><thead><tr><th style="width:150px">ພະນັກງານ</th>';
+  for(let d=1;d<=N;d++)h+='<th class="'+(isWork(d)?'':'we')+'">'+d+'<br><span style="font-weight:400">'+dn[wdOf(d)]+'</span></th>';
+  h+='<th class="sm">ມາທັນ</th><th class="sm">ມາຊ້າ</th><th class="sm">ອອກກ່ອນ</th><th class="sm">ບໍ່ check</th><th class="sm">ລາ</th></tr></thead><tbody>';
+  R.employees.forEach(e=>{
+    let ok=0,late=0,early=0,miss=0,lv=0,row='';
+    for(let d=1;d<=N;d++){
+      const ds=R.month+'-'+pad(d),rec=e.days[d]||{},has=!!(rec.in||rec.out),work=isWork(d);
+      const fut=ds>R.today,pend=ds===R.today&&R.nowMin<tmin(R.workEnd);
+      if(!has){
+        if(fut){row+='<td class="dy"><div class="c f"></div><div class="c f"></div></td>';continue}
+        if(rec.leave){if(work)lv++;row+='<td class="dy"><div class="c l">'+(showT?'ລາ':'')+'</div><div class="c l"></div></td>';continue}
+        if(!work){row+='<td class="dy"><div class="c w"></div><div class="c w"></div></td>';continue}
+        if(pend){row+='<td class="dy"><div class="c f"></div><div class="c f"></div></td>';continue}
+        miss+=2;row+='<td class="dy"><div class="c r">'+(showT?'✕':'')+'</div><div class="c r">'+(showT?'✕':'')+'</div></td>';continue;
+      }
+      let ci,co;
+      if(rec.in){const l=rec.inSt==='ມາຊ້າ';l?late++:ok++;ci='<div class="c '+(l?'y':'g')+'">'+(showT?rec.in:'')+'</div>'}
+      else if(work&&!pend){miss++;ci='<div class="c r">'+(showT?'✕':'')+'</div>'}else ci='<div class="c f"></div>';
+      if(rec.out){const l=rec.outSt==='ອອກກ່ອນ';if(l)early++;co='<div class="c '+(l?'y':'g')+'">'+(showT?rec.out:'')+'</div>'}
+      else if(work&&!pend){miss++;co='<div class="c r">'+(showT?'✕':'')+'</div>'}else co='<div class="c f"></div>';
+      row+='<td class="dy">'+ci+co+'</td>';
+    }
+    h+='<tr><td class="nm">'+esc(e.name)+'<small>'+esc(e.position||'')+'</small></td>'+row+'<td class="sm a">'+ok+'</td><td class="sm b">'+late+'</td><td class="sm b">'+early+'</td><td class="sm d">'+miss+'</td><td class="sm">'+lv+'</td></tr>';
+  });
+  return h+'</tbody></table><div class="note">ມາທັນ/ມາຊ້າ ນັບຈາກ Check-in · ອອກກ່ອນ ນັບຈາກ Check-out · ບໍ່ check ນັບທັງ IN ແລະ OUT ທີ່ຂາດໃນມື້ເຮັດວຽກ · ວັນລາພັກ ອ້າງອີງຈາກການກົດ "ລາພັກວຽກ" ຂອງພະນັກງານໃນລະບົບ (ບໍ່ນັບເປັນຂາດ) · ມື້ນີ້ຍັງບໍ່ຮອດເວລາເລີກວຽກ ຈະບໍ່ນັບ OUT ວ່າຂາດ</div>';
+}
+function attTab(){
+  let h='<div class="card"><h3>📊 ລາຍງານ Check-in / Check-out</h3><div class="row" style="margin:0"><input type="month" value="'+S.month+'" onchange="S.month=this.value;loadAtt()" style="flex:1"><button class="alt" style="flex:none" onclick="printAtt()" '+(S.att?'':'disabled')+'>🖨 ພິມ / PDF</button></div>'
+   +'<label style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" style="width:auto" '+(S.attT?'checked':'')+' onchange="S.attT=this.checked;render()"> ສະແດງເວລາໃນຊ່ອງ</label><p class="hint">ເລື່ອນຊ້າຍ-ຂວາເພື່ອເບິ່ງທຸກວັນ · ໃນໜ້າຕ່າງພິມເລືອກ Save as PDF</p></div>';
+  if(S.attErr){h+='<div class="res err"><p>'+esc(S.attErr)+'</p></div>';S.attErr=''}
+  else if(!S.att)h+='<p class="hint" style="text-align:center">ກຳລັງໂຫຼດ…</p>';
+  else h+='<div class="card rpwrap"><div class="rp">'+attHtml(S.att,S.attT)+'</div></div>';
+  return h;
+}
+function printAtt(){
+  if(!S.att)return;
+  document.getElementById('printArea').innerHTML='<div class="rp">'+attHtml(S.att,S.attT)+'</div>';
+  document.body.classList.add('printing');
+  const done=()=>{document.body.classList.remove('printing');window.removeEventListener('afterprint',done)};
+  window.addEventListener('afterprint',done);setTimeout(()=>window.print(),350);
 }
 function useHere(){if(S.gps&&S.gps.lat){la.value=S.gps.lat.toFixed(6);lo.value=S.gps.lng.toFixed(6)}else if(DEMO){la.value='17.975700';lo.value='102.633100'}}
 function adminLogin(){S.adminCode=document.getElementById('ac').value;post({action:'admin_list',adminCode:S.adminCode}).then(r=>{if(r.ok){S.admin=r;render()}else document.getElementById('amsg').textContent=r.msg}).catch(e=>document.getElementById('amsg').textContent=e.message)}
@@ -129,6 +213,18 @@ function demo(b){
   const emp=[{email:'somchai@gmail.com',name:'ທ່ານ ສົມໄຊ ວົງດາລາ'},{email:'noy@gmail.com',name:'ນາງ ນ້ອຍ ສີສະຫວັດ'},{email:'khamla@gmail.com',name:'ທ່ານ ຄຳລາ ພົມມະຈັນ'}];
   const loc=[{name:'ຫ້ອງການໃຫຍ່',radius:100},{name:'ໂຄງການ Solar ແຂວງຄຳມ່ວນ',radius:150}];
   if(b.action==='admin_list')return b.adminCode===''?{ok:false,msg:'ລະຫັດ Admin ບໍ່ຖືກຕ້ອງ'}:{ok:true,employees:emp,locations:loc};
+  if(b.action==='admin_attendance'){
+    const month=b.month||'2026-10',Y=+month.slice(0,4),M=+month.slice(5,7),N=new Date(Y,M,0).getDate(),fd=new Date(Date.UTC(Y,M-1,1)).getUTCDay();
+    let seed=7;const rnd=()=>(seed=(seed*9301+49297)%233280)/233280,pad=n=>String(n).padStart(2,'0'),hm=m=>pad(Math.floor(m/60))+':'+pad(m%60);
+    const TD=month==='2026-10'?26:(month<'2026-10'?N:0);
+    const E=[['ທ່ານ ສົມໄຊ ວົງດາລາ','ວິສະວະກອນ'],['ນາງ ນ້ອຍ ສີສະຫວັດ','ບັນຊີ'],['ທ່ານ ຄຳລາ ພົມມະຈັນ','ຜູ້ຈັດການໂຄງການ'],['ນາງ ແສງດາວ ໄຊຍະວົງ','HR / ບໍລິຫານ'],['ທ່ານ ບຸນມີ ອິນທະວົງ','ຊ່າງໄຟຟ້າ']].map(([name,position],pi)=>{
+      const days={};for(let d=1;d<=TD;d++){const w=(fd+d-1)%7;if(w===0||w===6)continue;
+        if(pi===3&&(d===12||d===13)){days[d]={leave:true};continue}
+        const r=rnd();if(r<.05)continue;const i=460+Math.floor(rnd()*40),o=rnd()<.15?990+Math.floor(rnd()*20):1020+Math.floor(rnd()*30);
+        days[d]={in:hm(i),inSt:i>480?'ມາຊ້າ':'ປົກກະຕິ',out:r>.93?undefined:hm(o),outSt:o<1020?'ອອກກ່ອນ':'ປົກກະຕິ'};}
+      return{email:'u'+pi+'@x.com',name,position,days}});
+    return{ok:true,month,today:'2026-10-26',daysInMonth:N,firstDow:fd,nowMin:1100,workDays:[1,2,3,4,5],workStart:'08:00',workEnd:'17:00',employees:E};
+  }
   if(b.action==='leave_info'||b.action==='leave')return{ok:true,msg:'ບັນທຶກລາພັກ 2 ມື້ ແລ້ວ',quota:5,used:{'2026-10':2},dates:['2026-10-28','2026-10-29'],today:'2026-10-26'};
   if(b.action&&b.action.indexOf('admin_')===0)return{ok:true,msg:'ດຳເນີນການສຳເລັດ ✅'};
   if(Q.get('s')==='result'||Q.get('s')==='ready')return{ok:true,msg:'Check-in ສຳເລັດ',name:'ທ່ານ ສົມໄຊ ວົງດາລາ',time:'07:52:31',status:'ປົກກະຕິ',distance:23,location:'ຫ້ອງການໃຫຍ່'};
@@ -142,6 +238,7 @@ if(DEMO){const s=Q.get('s');
  if(s==='leave'){S.email='somchai@gmail.com';S.view='leave';loadLeave()}
  if(s==='admin'){S.view='admin'}
  if(s==='adminin'){S.view='admin';S.adminCode='x';S.admin=demo({action:'admin_list',adminCode:'x'})}
+ if(s==='att'){S.view='admin';S.tab='att';S.adminCode='x';S.admin=demo({action:'admin_list',adminCode:'x'});S.month='2026-10';setTimeout(loadAtt,100)}
  if(s==='adminloc'){S.view='admin';S.tab='loc';S.adminCode='x';S.admin=demo({action:'admin_list',adminCode:'x'})}
  setTimeout(render,200);}
 </script></body></html>
