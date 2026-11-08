@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="lo"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thavysub Energy</title>
+<meta name="theme-color" content="#0b6b4a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Thavysub">
+<meta name="mobile-web-app-capable" content="yes">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Lao:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="config.js"></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;min-height:100vh;font-family:'Noto Sans Lao',system-ui,sans-serif;background:#f1f6f3;color:#1b2a24;display:flex;flex-direction:column}
+header{background:#fff;text-align:center;padding:max(14px,env(safe-area-inset-top)) 12px 14px;border-bottom:3px solid #0b6b4a}
+header img{height:52px;max-width:88%;object-fit:contain}
+main{flex:1;padding:22px 16px;max-width:520px;width:100%;margin:0 auto}
+h1{font-size:20px;margin:6px 0 4px;color:#0b6b4a}.sub{margin:0 0 20px;color:#667;font-size:14px}
+a.card{display:flex;align-items:center;gap:16px;background:#fff;border-radius:20px;padding:20px 18px;margin-bottom:16px;text-decoration:none;color:inherit;box-shadow:0 2px 10px #0b6b4a22;border:2px solid transparent}
+a.card:active{border-color:#0b6b4a;transform:scale(.99)}
+.ic{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:32px;flex:none}
+.i1{background:#e8f5ef}.i2{background:#fff4e0}.i3{background:#e8eefc}.i4{background:#f1e8fb}.i5{background:#e3f4f7}
+.t{font-size:18px;font-weight:700}.d{font-size:13px;color:#667;margin-top:2px}
+.go{margin-left:auto;font-size:26px;color:#0b6b4a}
+footer{text-align:center;color:#889;font-size:12px;padding:14px 12px max(14px,env(safe-area-inset-bottom))}
+</style></head><body>
+<header><img src="logo.png" alt="Thavysub Energy"></header>
+<main>
+  <h1>ເລືອກເມນູ</h1><p class="sub">ກົດເພື່ອເຂົ້າໃຊ້ງານ</p>
+  <a class="card" id="lc" href="checkin.html"><div class="ic i1">📍</div><div><div class="t">Check-in / Check-out</div><div class="d">ລົງເວລາເຂົ້າ-ອອກວຽກ ແລະ ລາພັກ</div></div><div class="go">›</div></a>
+  <a class="card" id="lr" href="report.html"><div class="ic i2">📝</div><div><div class="t">ລາຍງານປະຈຳວັນ</div><div class="d">ສົ່ງລາຍງານ, ເບິ່ງປະຫວັດ ແລະ Admin</div></div><div class="go">›</div></a>
+  <a class="card" id="lk" href="kpi.html"><div class="ic i3">⭐</div><div><div class="t">ປະເມີນ KPI / Incentive</div><div class="d">ປະເມີນພະນັກງານປະຈຳເດືອນ ແລະ ເບິ່ງຜົນ</div></div><div class="go">›</div></a>
+  <a class="card" id="ld" href="directory.html"><div class="ic i4">👥</div><div><div class="t">ຂໍ້ມູນພະນັກງານ</div><div class="d">ລາຍຊື່, ຮູບ ແລະ ໂຄງຮ່າງການຈັດຕັ້ງ</div></div><div class="go">›</div></a>
+  <a class="card" id="lp" href="projects.html"><div class="ic i5">☀️</div><div><div class="t">ໂຄງການ</div><div class="d">Serial ແຜງ, Inverter, ຕິດຕາມອຸປະກອນ ແລະ ແຜນ O&amp;M</div></div><div class="go">›</div></a>
+</main>
+<footer>ບໍລິສັດ ທະວີຊັບ ວິສະວະກຳພະລັງງານ ແລະ ທີ່ປຶກສາ ຈຳກັດ</footer>
+<script>
+try{if(typeof CHECKIN_URL==='string'&&/^https?:\/\//.test(CHECKIN_URL))document.getElementById('lc').href=CHECKIN_URL}catch(e){}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
